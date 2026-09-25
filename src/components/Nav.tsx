@@ -13,7 +13,7 @@ const items = [
 export function Nav() {
   const path = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-white/95 backdrop-blur">
+    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-(--line) bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-md">
         {items.map((it) => {
           const active = it.href === "/" ? path === "/" : path.startsWith(it.href);
@@ -21,7 +21,7 @@ export function Nav() {
             <Link
               key={it.href}
               href={it.href}
-              className={`flex-1 py-3 text-center text-sm font-semibold ${active ? "text-[var(--green)]" : "text-[var(--muted)]"}`}
+              className={`flex-1 py-3 text-center text-sm font-semibold ${active ? "text-(--green)" : "text-(--muted)"}`}
             >
               {it.label}
             </Link>

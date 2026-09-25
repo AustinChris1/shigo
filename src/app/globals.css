@@ -15,6 +15,17 @@
 
 html, body { background: var(--bg); color: var(--ink); }
 body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+.font-display { font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif; }
+
+/* The coin drops through the slot into the box. */
+@keyframes mark-coin-drop {
+  0% { transform: translateY(-31px); }
+  55% { transform: translateY(3px); }
+  75% { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+.mark-coin-drop { animation: mark-coin-drop 0.7s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) { .mark-coin-drop { animation: none; } }
 
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 12px; padding: .8rem 1.1rem; font-weight: 600; min-height: 48px; }
@@ -45,4 +56,23 @@ body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
 @media print {
   nav, .no-print { display: none !important; }
   body { background: #fff; }
+}
+
+/* Dark ground. Kept last so these win the cascade over the base rules above. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1412;
+    --ink: #f2f4f1;
+    --muted: #9aa49f;
+    --line: #26302b;
+    --card: #161c19;
+    --amber: #e0a63a;
+    --amber-bg: #2a2210;
+    --green: #3fbf6f;
+    --green-bg: #0f2a1a;
+  }
+  .btn-primary { background: var(--ink); color: var(--bg); }
+  .input { background: var(--card); color: var(--ink); }
+  .pill-grey { background: #26302b; }
+  nav { background: rgba(15, 20, 18, 0.95); }
 }

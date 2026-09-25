@@ -18,9 +18,9 @@ export default async function Report({ params }: { params: Promise<{ orderId: st
   return (
     <main className="space-y-5">
       <header>
-        <Link href={`/orders/${order.id}`} className="text-sm text-[var(--muted)]">← Order</Link>
+        <Link href={`/orders/${order.id}`} className="text-sm text-(--muted)">← Order</Link>
         <h1 className="mt-2 text-2xl font-bold tracking-tight">Report a fake receipt</h1>
-        <p className="text-sm text-[var(--muted)]">
+        <p className="text-sm text-(--muted)">
           Order {order.reference} for {naira(order.amountKobo)} has not been confirmed by the bank. Keep the goods. Save what you were shown so you can send it to your bank.
         </p>
       </header>

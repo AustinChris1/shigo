@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { naira } from "@/lib/money";
+import { Mark } from "./Mark";
 
 // The single-order screen the seller holds up at the counter. Amber until the bank confirms; then green.
 export function OrderLive(props: {
@@ -41,16 +42,19 @@ export function OrderLive(props: {
       style={paid && !flash ? { background: "var(--green-bg)" } : undefined}
       aria-live="polite"
     >
+      <div className="mb-3 flex justify-center">
+        <Mark size={72} state={paid ? "entered" : state === "CANCELLED" ? "mono" : "pending"} animate={flash} />
+      </div>
       <div className="text-4xl font-bold tracking-tight">{naira(props.amountKobo)}</div>
-      <div className="mt-1 text-sm text-[var(--muted)]">
+      <div className="mt-1 text-sm text-(--muted)">
         {props.reference}
         {props.note ? ` · ${props.note}` : ""}
       </div>
       <div className="mt-5">
         {paid ? (
           <>
-            <div className="text-2xl font-bold text-[var(--green)]">Shigo. It has entered.</div>
-            <div className="mt-1 text-xs text-[var(--muted)]">
+            <div className="font-display text-2xl font-extrabold text-(--green)">Shigo. It has entered.</div>
+            <div className="mt-1 text-xs text-(--muted)">
               Confirmed by the bank {paidAt ? new Date(paidAt).toLocaleTimeString("en-NG", { hour: "2-digit", minute: "2-digit" }) : ""}
               {props.payer ? ` · from ${props.payer}` : ""}
               {props.rail === "simulated" ? " · simulated credit" : ""}
@@ -61,7 +65,7 @@ export function OrderLive(props: {
         ) : (
           <>
             <div className="pill pill-amber text-base">Not yet</div>
-            <p className="mt-3 text-xs text-[var(--muted)]">Keep the goods until this turns green. A screenshot cannot change this screen.</p>
+            <p className="mt-3 text-xs text-(--muted)">Keep the goods until this turns green. A screenshot cannot change this screen.</p>
           </>
         )}
       </div>

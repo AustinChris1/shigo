@@ -6,6 +6,8 @@ Shigo is a mobile-first web app for student sellers on WhatsApp. The seller crea
 
 Built for InnovateX 2026 (Ecobank / Blaze), Track A: Inclusive Finance. See `Shigo-InnovateX-2026-Build-Brief.docx` for the full brief.
 
+**The mark:** the account is a box with a slot; the coin sits outside it, amber, until the bank confirms, then drops inside and turns green. The logo is the product's one state change. Wordmark in Bricolage Grotesque; mark lives in `src/components/Mark.tsx` and `public/icon.svg`.
+
 ## Run it locally
 
 ```bash

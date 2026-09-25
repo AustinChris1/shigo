@@ -27,7 +27,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   return (
     <main className="space-y-5">
       <header>
-        <Link href="/" className="text-sm text-[var(--muted)]">← Orders</Link>
+        <Link href="/" className="text-sm text-(--muted)">← Orders</Link>
       </header>
 
       <OrderLive
@@ -41,17 +41,17 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
         rail={order.credit?.rail ?? null}
       />
 
-      {reported && <p className="card border-[var(--green)] bg-[var(--green-bg)] p-3 text-sm">Report saved. Send it to your bank from the ledger page.</p>}
+      {reported && <p className="card border-(--green) bg-(--green-bg) p-3 text-sm">Report saved. Send it to your bank from the ledger page.</p>}
 
       {order.state === "PENDING" && (
         <>
           <section className="card space-y-3 p-4">
-            <h2 className="text-sm font-semibold text-[var(--muted)]">Buyer pays to</h2>
+            <h2 className="text-sm font-semibold text-(--muted)">Buyer pays to</h2>
             <div className="text-lg font-semibold">{seller.bankName ?? "Bank"} · {seller.accountNumber ?? "add your account number"}</div>
             <div className="text-sm">{seller.name}</div>
             <div className="text-sm">
               Narration: <span className="font-mono font-bold">{order.reference}</span>
-              <span className="block text-xs text-[var(--muted)]">Optional. If the buyer forgets it, exact amount still matches when this is your only open order at that amount.</span>
+              <span className="block text-xs text-(--muted)">Optional. If the buyer forgets it, exact amount still matches when this is your only open order at that amount.</span>
             </div>
             <a href={wa} target="_blank" rel="noreferrer" className="btn btn-green w-full">Send details on WhatsApp</a>
           </section>

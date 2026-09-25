@@ -31,35 +31,35 @@ export default async function Ledger() {
   return (
     <main className="space-y-5">
       <header>
-        <Link href="/" className="text-sm text-[var(--muted)]">← Orders</Link>
+        <Link href="/" className="text-sm text-(--muted)">← Orders</Link>
         <h1 className="mt-2 text-2xl font-bold tracking-tight">Ledger</h1>
-        <p className="text-sm text-[var(--muted)]">Confirmed payments only. This is your income record.</p>
+        <p className="text-sm text-(--muted)">Confirmed payments only. This is your income record.</p>
       </header>
 
       <div className="grid grid-cols-2 gap-2">
         <div className="card p-4">
-          <div className="text-xs text-[var(--muted)]">Last 7 days</div>
+          <div className="text-xs text-(--muted)">Last 7 days</div>
           <div className="text-xl font-bold">{naira(week)}</div>
         </div>
         <div className="card p-4">
-          <div className="text-xs text-[var(--muted)]">All time · {rows.length} paid</div>
+          <div className="text-xs text-(--muted)">All time · {rows.length} paid</div>
           <div className="text-xl font-bold">{naira(total)}</div>
         </div>
       </div>
 
       <Link href="/ledger/export" className="btn btn-primary w-full">Export income record</Link>
 
-      <section className="card divide-y divide-[var(--line)]">
+      <section className="card divide-y divide-(--line)">
         {[...byMonth.entries()].map(([k, v]) => (
           <div key={k} className="flex items-center justify-between p-4">
             <div>
               <div className="font-semibold">{k}</div>
-              <div className="text-xs text-[var(--muted)]">{v.n} paid orders</div>
+              <div className="text-xs text-(--muted)">{v.n} paid orders</div>
             </div>
             <div className="font-bold">{naira(v.sum)}</div>
           </div>
         ))}
-        {rows.length === 0 && <p className="p-4 text-sm text-[var(--muted)]">No confirmed payments yet.</p>}
+        {rows.length === 0 && <p className="p-4 text-sm text-(--muted)">No confirmed payments yet.</p>}
       </section>
     </main>
   );

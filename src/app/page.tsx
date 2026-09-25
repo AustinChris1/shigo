@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { currentSeller } from "@/lib/session";
 import { LiveOrders } from "@/components/LiveOrders";
 import { logoutAction } from "@/lib/actions";
+import { Wordmark } from "@/components/Mark";
 
 export const dynamic = "force-dynamic";
 
@@ -26,11 +27,11 @@ export default async function Home() {
     <main className="space-y-5">
       <header className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Shigo</h1>
-          <p className="text-sm text-[var(--muted)]">{seller.name} · {seller.bankName ?? "bank"} {seller.accountNumber ?? ""}</p>
+          <h1><Wordmark size={30} /></h1>
+          <p className="text-sm text-(--muted)">{seller.name} · {seller.bankName ?? "bank"} {seller.accountNumber ?? ""}</p>
         </div>
         <form action={logoutAction}>
-          <button className="text-xs text-[var(--muted)] underline">Sign out</button>
+          <button className="text-xs text-(--muted) underline">Sign out</button>
         </form>
       </header>
 

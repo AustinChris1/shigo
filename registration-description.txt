@@ -1,9 +1,0 @@
-Small sellers are losing money to fake transfer alerts. A customer shows a screenshot, the seller releases the goods, and the money never comes. In September 2026 Sahara Reporters exposed Slipcraft, a site with over 61,000 Telegram members generating fake OPay, Kuda and PalmPay receipts. A Punch survey of 330 Lagos traders found 52% had received a fake alert and 27% had lost money.
-
-Shigo (Hausa for "enter") fixes this for student sellers. The seller creates an order, the buyer pays by normal transfer from any bank, and the order turns green only when the receiving bank's webhook confirms the credit in the seller's Ecobank Blaze account. No screenshot can turn it green. Every confirmed payment is also saved in a ledger the student owns and can export as proof of income when applying for YouthCred or an Ecobank loan after NYSC.
-
-Our users are students aged 18 to 25 selling on WhatsApp. The Garage's 2026 survey across 55 institutions found two thirds of students earn while in school and 53% of student businesses sell mainly on WhatsApp.
-
-Sellers stop losing goods to fake alerts and stop refusing transfers. Ecobank gains active Blaze accounts with real inflows. Young people get a verified income record they cannot show any bank today.
-
-This is feasible now. Ecobank's developer sandbox already offers transaction webhooks and account enquiry. No hardware, no AI model, no BVN access. We will test it with ten real student sellers before the finale.
