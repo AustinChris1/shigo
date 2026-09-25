@@ -43,3 +43,8 @@ next-env.d.ts
 # local database
 prisma/dev.db*
 *.db-journal
+
+# local tooling notes and screenshot output
+CLAUDE.md
+AGENTS.md
+screenshots/
