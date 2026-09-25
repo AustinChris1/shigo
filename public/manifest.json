@@ -1,0 +1,12 @@
+{
+  "name": "Shigo",
+  "short_name": "Shigo",
+  "description": "The seller's screen turns green only when the bank says so.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafaf7",
+  "theme_color": "#14783c",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

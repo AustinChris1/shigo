@@ -1,26 +1,48 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #fafaf7;
+  --ink: #111614;
+  --muted: #6b7470;
+  --line: #e4e6e2;
+  --card: #ffffff;
+  --amber: #b7791f;
+  --amber-bg: #fff6e0;
+  --green: #14783c;
+  --green-bg: #e3f6e9;
+  --red: #a52a2a;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 12px; padding: .8rem 1.1rem; font-weight: 600; min-height: 48px; }
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--ink); }
+.btn-green { background: var(--green); color: #fff; }
+.input { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: .85rem 1rem; background: #fff; font-size: 1rem; min-height: 48px; }
+.input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+.label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: .35rem; }
+
+.pill { display: inline-flex; align-items: center; gap: .4rem; border-radius: 999px; padding: .25rem .65rem; font-size: .8rem; font-weight: 600; }
+.pill-amber { background: var(--amber-bg); color: var(--amber); }
+.pill-green { background: var(--green-bg); color: var(--green); }
+.pill-grey { background: #eef0ee; color: var(--muted); }
+
+/* The green moment. The whole card fills, then settles. */
+@keyframes shigo-land {
+  0% { background: var(--card); transform: scale(1); }
+  30% { background: var(--green); color: #fff; transform: scale(1.02); }
+  100% { background: var(--green-bg); transform: scale(1); }
+}
+.just-paid { animation: shigo-land 1.4s ease-out forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .just-paid { animation: none; background: var(--green-bg); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media print {
+  nav, .no-print { display: none !important; }
+  body { background: #fff; }
 }

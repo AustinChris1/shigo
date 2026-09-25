@@ -1,0 +1,89 @@
+// Shigo data model. SQLite for local dev; switch provider to postgresql for production.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Seller {
+  id             String        @id @default(cuid())
+  phone          String        @unique
+  name           String
+  bankName       String?
+  accountNumber  String?
+  // How the rail names this receiving account in webhook payloads (Paystack DVA number, Ecobank account number).
+  railAccountRef String?       @unique
+  createdAt      DateTime      @default(now())
+  orders         Order[]
+  credits        Credit[]
+  ledger         LedgerEntry[]
+  reports        Report[]
+}
+
+// One order = one expected payment. State machine: PENDING -> PAID, or PENDING -> CANCELLED.
+model Order {
+  id          String       @id @default(cuid())
+  sellerId    String
+  seller      Seller       @relation(fields: [sellerId], references: [id])
+  amountKobo  Int
+  reference   String       @unique // short code the buyer can put in narration, e.g. SG-7K2Q
+  note        String?
+  state       String       @default("PENDING")
+  createdAt   DateTime     @default(now())
+  paidAt      DateTime?
+  credit      Credit?
+  ledgerEntry LedgerEntry?
+  reports     Report[]
+
+  @@index([sellerId, state, amountKobo])
+}
+
+// One inbound payment as the rail reported it; state MATCHED, HELD (seller picks) or UNMATCHED.
+model Credit {
+  id         String    @id @default(cuid())
+  sellerId   String?
+  seller     Seller?   @relation(fields: [sellerId], references: [id])
+  rail       String // "paystack" | "ecobank" | "simulated"
+  externalId String // the rail's own id for this transaction; (rail, externalId) is the idempotency key
+  amountKobo Int
+  narration  String?
+  payerName  String?
+  occurredAt DateTime
+  raw        String // full payload as received, for audit
+  state      String    @default("UNMATCHED")
+  orderId    String?   @unique
+  order      Order?    @relation(fields: [orderId], references: [id])
+  createdAt  DateTime  @default(now())
+
+  @@unique([rail, externalId])
+  @@index([sellerId, state])
+}
+
+// One row per confirmed payment. This is the record the seller exports.
+model LedgerEntry {
+  id         String   @id @default(cuid())
+  sellerId   String
+  seller     Seller   @relation(fields: [sellerId], references: [id])
+  orderId    String   @unique
+  order      Order    @relation(fields: [orderId], references: [id])
+  amountKobo Int
+  date       DateTime
+
+  @@index([sellerId, date])
+}
+
+// Seller's own record of a fake-alert attempt; never shared with other sellers.
+model Report {
+  id           String    @id @default(cuid())
+  sellerId     String
+  seller       Seller    @relation(fields: [sellerId], references: [id])
+  orderId      String?
+  order        Order?    @relation(fields: [orderId], references: [id])
+  note         String?
+  imageDataUrl String? // the screenshot the seller was shown, kept only for their own report
+  createdAt    DateTime  @default(now())
+  sentToBankAt DateTime?
+}
