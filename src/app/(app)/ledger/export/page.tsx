@@ -10,7 +10,8 @@ export const dynamic = "force-dynamic";
 export default async function Export() {
   const seller = await currentSeller();
   if (!seller) redirect("/login");
-  const rows = await db.ledgerEntry.findMany({ where: { sellerId: seller.id }, orderBy: { date: "asc" }, include: { order: { include: { credit: true } } } });
+  // Test payments (demo mode) are never part of the income record.
+  const rows = await db.ledgerEntry.findMany({ where: { sellerId: seller.id, NOT: { order: { credit: { rail: "simulated" } } } }, orderBy: { date: "asc" }, include: { order: { include: { credit: true } } } });
 
   const months = new Map<string, { sum: number; n: number }>();
   for (const r of rows) {

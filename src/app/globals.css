@@ -163,3 +163,9 @@ html[data-theme="dark"] .form-error { color: #f08a7e; }
 .otp-icon { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 12px; background: var(--green-bg); color: var(--green); }
 .otp-demo { padding: 10px 12px; border-radius: 12px; background: var(--amber-bg); color: var(--amber); font-size: .88rem; }
 .otp-input { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 1.6rem; letter-spacing: .5em; text-align: center; }
+
+/* Demo mode panel: dashed amber so it can never be mistaken for a real payment control. */
+.demo-pay { display: grid; gap: 10px; padding: 14px; border: 1.5px dashed var(--amber); border-radius: 14px; background: var(--amber-bg); color: var(--ink); }
+.demo-pay-head { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--amber); }
+.demo-pay p { font-size: .88rem; line-height: 1.45; color: var(--muted); }
+.demo-pay-btn { background: var(--ink); color: var(--bg); }

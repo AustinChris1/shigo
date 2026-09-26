@@ -18,6 +18,8 @@ Deadline: InnovateX 2026 regional selection (dates unpublished), then the finale
 - [x] Sign-in by one-time SMS code (Termii, "dnd" route) with a signed session cookie; demo mode shows the code on screen until `TERMII_API_KEY` and `TERMII_BASE_URL` are set
 - [x] Live at https://useshigo.vercel.app
 - [x] Ecobank Validate Account Name client (`src/lib/ecobank.ts`), used for Ecobank accounts once `ECOBANK_*` credentials are set; Paystack covers every bank until then
+- [x] Buyer-name matching (no codes for buyers); FAQ on the landing page
+- [x] Demo mode for the pitch: "Send test payment" on waiting orders, labelled as a test and left out of the income record (`DEMO_MODE=1`, on in production)
 - [x] Smooth scroll on the landing page (Lenis, synced with the scroll animations; off for reduced motion)
 - [x] Tests: `node scripts/e2e-local.mjs` (matcher rules), `node scripts/bank-picker-check.mjs` (bank search), `node scripts/name-match-check.mts` (bank name rule), `node scripts/signin-check.mjs` and `node scripts/toast-check.mjs` (sign-in and toasts), `node scripts/screenshots.mjs` and `node scripts/landing-shots.mjs` (visual review)
 

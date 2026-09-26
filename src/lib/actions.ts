@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "./db";
 import { newReference, toKobo } from "./money";
-import { assignCredit } from "./match";
+import { assignCredit, ingestCredit } from "./match";
 import { requireSeller, setSession, clearSession } from "./session";
 import { emitToSeller } from "./events";
 import { cookies } from "next/headers";
@@ -152,4 +152,30 @@ export async function createReportAction(formData: FormData) {
   await db.report.create({ data: { sellerId: seller.id, orderId, note, imageDataUrl } });
   await flash("success", "Report saved", "Keep the goods until the order turns green.");
   redirect(orderId ? `/orders/${orderId}` : "/app");
+}
+
+// Demo mode (DEMO_MODE=1): the seller sends a labelled test payment to their own open order, so the green moment can be
+// shown before a bank is connected. Test payments are marked "simulated" and never count in the exported income record.
+export const demoModeOn = async () => process.env.DEMO_MODE === "1";
+
+export async function sendTestPaymentAction(orderId: string): Promise<{ ok: boolean; error?: string }> {
+  if (process.env.DEMO_MODE !== "1") return { ok: false, error: "Test payments are switched off." };
+  const seller = await requireSeller();
+  const order = await db.order.findFirst({ where: { id: orderId, sellerId: seller.id, state: "PENDING" } });
+  if (!order) return { ok: false, error: "This order is not waiting for payment." };
+  if (!seller.railAccountRef) return { ok: false, error: "Add your account number first." };
+  const r = await ingestCredit({
+    rail: "simulated",
+    externalId: `demo_${order.id}_${Date.now()}`,
+    amountKobo: order.amountKobo,
+    currency: "NGN",
+    accountRef: seller.railAccountRef,
+    narration: order.note ?? undefined,
+    payerName: order.buyerName ? order.buyerName.toUpperCase() : "TEST BUYER",
+    occurredAt: new Date(),
+    raw: { demo: true },
+  });
+  revalidatePath(`/orders/${order.id}`);
+  revalidatePath("/app");
+  return r.status === "matched" ? { ok: true } : { ok: false, error: "The test payment arrived but needs you to pick the order under Unmatched." };
 }

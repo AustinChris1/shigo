@@ -19,7 +19,7 @@ export default async function Home() {
   startOfDay.setHours(0, 0, 0, 0);
   const [orders, today, pendingCredits] = await Promise.all([
     db.order.findMany({ where: { sellerId: seller.id }, orderBy: { createdAt: "desc" }, take: 50 }),
-    db.ledgerEntry.aggregate({ where: { sellerId: seller.id, date: { gte: startOfDay } }, _sum: { amountKobo: true }, _count: true }),
+    db.ledgerEntry.aggregate({ where: { sellerId: seller.id, date: { gte: startOfDay }, NOT: { order: { credit: { rail: "simulated" } } } }, _sum: { amountKobo: true }, _count: true }),
     db.credit.count({ where: { sellerId: seller.id, state: { in: ["HELD", "UNMATCHED"] } } }),
   ]);
   const rows = orders.map((o) => ({

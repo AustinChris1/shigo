@@ -15,7 +15,10 @@ export default async function Ledger() {
   const seller = await currentSeller();
   if (!seller) redirect("/login");
 
-  const rows = await db.ledgerEntry.findMany({ where: { sellerId: seller.id }, orderBy: { date: "desc" }, include: { order: true } });
+  const all = await db.ledgerEntry.findMany({ where: { sellerId: seller.id }, orderBy: { date: "desc" }, include: { order: { include: { credit: true } } } });
+  // Test payments from demo mode are shown as a count but never added to the income totals.
+  const rows = all.filter((r) => r.order.credit?.rail !== "simulated");
+  const tests = all.length - rows.length;
   const total = rows.reduce((a, r) => a + r.amountKobo, 0);
   // Server component, rendered once per request; reading the clock here is intended.
   // eslint-disable-next-line react-hooks/purity
@@ -46,6 +49,8 @@ export default async function Ledger() {
           <div className="text-xl font-bold">{naira(total)}</div>
         </div>
       </div>
+
+      {tests > 0 && <p className="pill pill-amber">{tests} test payment{tests === 1 ? "" : "s"} not counted</p>}
 
       <Link href="/ledger/export" className="btn btn-primary w-full">Export income record</Link>
 

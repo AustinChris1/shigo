@@ -35,7 +35,7 @@ export function OrderLive(props: {
           setState("PAID");
           setPaidAt(me.paidAt);
           setFlash(true);
-        toast.success(`${naira(props.amountKobo)} has entered`, { id: `paid-${props.orderId}`, description: "Confirmed by the bank. Hand over the goods." });
+        toast.success(`${naira(props.amountKobo)} has entered`, { id: `paid-${props.orderId}`, description: "Payment confirmed. Hand over the goods." });
         router.refresh();
           if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
         }
@@ -55,7 +55,7 @@ export function OrderLive(props: {
         setState("PAID");
         setPaidAt(ev.paidAt);
         setFlash(true);
-        toast.success(`${naira(props.amountKobo)} has entered`, { id: `paid-${props.orderId}`, description: "Confirmed by the bank. Hand over the goods." });
+        toast.success(`${naira(props.amountKobo)} has entered`, { id: `paid-${props.orderId}`, description: "Payment confirmed. Hand over the goods." });
         router.refresh();
         if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
         es.close();
@@ -86,7 +86,7 @@ export function OrderLive(props: {
             <div className="mt-1 text-xs text-(--muted)">
               Confirmed by the bank {paidAt ? new Date(paidAt).toLocaleTimeString("en-NG", { hour: "2-digit", minute: "2-digit" }) : ""}
               {props.payer ? ` · from ${props.payer}` : ""}
-              {props.rail === "simulated" ? " · simulated credit" : ""}
+              {props.rail === "simulated" ? " · test payment, not real money" : ""}
             </div>
           </>
         ) : state === "CANCELLED" ? (

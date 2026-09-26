@@ -6,6 +6,8 @@ import { naira } from "@/lib/money";
 import { cancelOrderAction } from "@/lib/actions";
 import { OrderLive } from "@/components/OrderLive";
 import { ShareButton } from "@/components/ShareButton";
+import { DemoPayButton } from "@/components/DemoPayButton";
+import { demoModeOn } from "@/lib/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
   const { id } = await params;
   const order = await db.order.findFirst({ where: { id, sellerId: seller.id }, include: { credit: true } });
   if (!order) notFound();
+  const demo = await demoModeOn();
 
   const payText = [
     `Please pay ${naira(order.amountKobo)}${order.note ? ` for ${order.note}` : ""}.`,
@@ -43,6 +46,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
       {order.state === "PENDING" && (
         <>
+          {demo && <DemoPayButton orderId={order.id} amount={naira(order.amountKobo)} />}
           <section className="card space-y-3 p-4">
             <h2 className="text-sm font-semibold text-(--muted)">Buyer pays to</h2>
             <div className="text-lg font-semibold">{seller.bankName ?? "Bank"} · {seller.accountNumber ?? "add your account number"}</div>

@@ -28,7 +28,7 @@ Shigo never watches the **buyer**. It doesn't read their screenshot, their app o
 
 Why fake receipts can't beat it: a fake receipt changes what's on the *buyer's* phone. Shigo only reacts to the *bank* confirming money in the *seller's* account, and no screenshot can make a bank send that message.
 
-**Where it stands today:** steps 2 to 4 are built and tested. Step 1 waits on Ecobank's sandbox reply ([docs/ecobank-api-notes.md](docs/ecobank-api-notes.md)). Until then a clearly labelled test credit stands in for the bank's message.
+**Where it stands today:** steps 2 to 4 are built and tested. Step 1 waits on Ecobank's sandbox reply ([docs/ecobank-api-notes.md](docs/ecobank-api-notes.md)). Until then, demo mode's **Send test payment** button stands in for the bank's message. It is labelled as a test everywhere and never counted in the income record.
 
 ## A real-life example
 
@@ -68,7 +68,8 @@ With `vercel env pull .env` you get the same Neon database the live site uses.
 | `PAYSTACK_SECRET_KEY` | Bank-name check at sign-in (all banks); Paystack payment webhooks | Name check is off; sign-in still works |
 | `TERMII_API_KEY`, `TERMII_BASE_URL`, `TERMII_SENDER_ID` | Texts the sign-in code (Termii, "dnd" route) | Demo mode: the code is shown on screen |
 | `ECOBANK_*` | Ecobank's own account check and payment notifications | Paystack is used instead |
-| `ALLOW_SIMULATED_CREDITS` | Test button that fakes a bank credit | Keep `0` on the live site |
+| `DEMO_MODE` | "Send test payment" button on waiting orders, for the pitch; test payments are labelled and never counted as income | No button |
+| `ALLOW_SIMULATED_CREDITS` | Developer endpoint that fakes a bank credit (tests only) | Keep `0` on the live site |
 
 ## How payments reach Shigo
 
@@ -107,6 +108,7 @@ npm run build && PAYSTACK_SECRET_KEY=sk_test_dummy npm start
 | `node scripts/bank-picker-check.mjs` | Bank search, keyboard use |
 | `node scripts/signin-check.mjs` | Sign-in with the code step |
 | `node scripts/toast-check.mjs` | Toasts, install prompt, live payment |
+| `node scripts/demo-check.mjs` | Demo mode: test payment turns green, stays out of the income record (start the server with `DEMO_MODE=1`) |
 | `node scripts/landing-shots.mjs` | Landing and sign-in screenshots, light and dark |
 
 ## Deploy
