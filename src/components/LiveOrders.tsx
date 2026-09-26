@@ -101,62 +101,64 @@ export function LiveOrders({ initial }: { initial: OrderRow[] }) {
   const open = orders.filter((o) => o.state === "PENDING");
   const done = orders.filter((o) => o.state !== "PENDING");
 
+  const time = (iso: string) => new Date(iso).toLocaleTimeString("en-NG", { hour: "2-digit", minute: "2-digit" });
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between text-xs text-(--muted)">
+    <div className="space-y-5">
+      <div className="app-live">
+        <span className={`app-live-dot ${connected ? "on" : ""}`} />
         <span>{connected ? "Listening to the bank" : "Reconnecting…"}</span>
-        <span className={`h-2 w-2 rounded-full ${connected ? "bg-(--green)" : "bg-(--amber)"}`} />
       </div>
 
       {notice && (
-        <Link href="/credits" className="card block border-(--amber) bg-(--amber-bg) p-3 text-sm">
-          {notice} <span className="font-semibold underline">Open</span>
+        <Link href="/credits" className="app-notice">
+          <span>{notice}</span> <span className="font-semibold underline">Open</span>
         </Link>
       )}
 
       <section>
-        <h2 className="mb-2 text-sm font-semibold text-(--muted)">Waiting</h2>
-        {open.length === 0 && <p className="card p-4 text-sm text-(--muted)">No open orders. Tap New to create one.</p>}
-        <ul className="space-y-2">
+        <h2 className="app-sec">Waiting <span>{open.length}</span></h2>
+        {open.length === 0 && (
+          <div className="app-empty">
+            <Mark size={36} state="pending" />
+            <p>No open orders. Tap <b>New</b> to collect a payment.</p>
+          </div>
+        )}
+        <ul className="app-list">
           {open.map((o) => (
             <li key={o.id}>
-              <Link href={`/orders/${o.id}`} className="card flex items-center justify-between p-4">
-                <div>
-                  <div className="text-lg font-bold">{naira(o.amountKobo)}</div>
-                  <div className="text-xs text-(--muted)">
-                    {o.reference}
-                    {o.note ? ` · ${o.note}` : ""}
-                  </div>
-                </div>
-                <span className="pill pill-amber"><Mark size={16} state="pending" /> Not yet</span>
+              <Link href={`/orders/${o.id}`} className="app-row">
+                <span className="app-row-icon is-wait"><Mark size={22} state="pending" /></span>
+                <span className="app-row-main">
+                  <span className="app-row-amt">{naira(o.amountKobo)}</span>
+                  <span className="app-row-meta">{o.reference}{o.note ? ` · ${o.note}` : ""} · {time(o.createdAt)}</span>
+                </span>
+                <span className="pill pill-amber">Not yet</span>
               </Link>
             </li>
           ))}
         </ul>
       </section>
 
-      <section>
-        <h2 className="mb-2 text-sm font-semibold text-(--muted)">Done</h2>
-        <ul className="space-y-2">
-          {done.map((o) => (
-            <li key={o.id}>
-              <Link
-                href={`/orders/${o.id}`}
-                className={`card flex items-center justify-between p-4 ${justPaid.has(o.id) ? "just-paid" : ""}`}
-              >
-                <div>
-                  <div className="text-lg font-bold">{naira(o.amountKobo)}</div>
-                  <div className="text-xs text-(--muted)">
-                    {o.reference}
-                    {o.note ? ` · ${o.note}` : ""}
-                  </div>
-                </div>
-                {o.state === "PAID" ? <span className="pill pill-green"><Mark size={16} state="entered" /> Shigo</span> : <span className="pill pill-grey">Cancelled</span>}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {done.length > 0 && (
+        <section>
+          <h2 className="app-sec">Done <span>{done.length}</span></h2>
+          <ul className="app-list">
+            {done.map((o) => (
+              <li key={o.id}>
+                <Link href={`/orders/${o.id}`} className={`app-row ${justPaid.has(o.id) ? "just-paid" : ""}`}>
+                  <span className={`app-row-icon ${o.state === "PAID" ? "is-paid" : ""}`}><Mark size={22} state={o.state === "PAID" ? "entered" : "mono"} /></span>
+                  <span className="app-row-main">
+                    <span className="app-row-amt">{naira(o.amountKobo)}</span>
+                    <span className="app-row-meta">{o.reference}{o.note ? ` · ${o.note}` : ""}{o.paidAt ? ` · ${time(o.paidAt)}` : ""}</span>
+                  </span>
+                  {o.state === "PAID" ? <span className="pill pill-green">Shigo</span> : <span className="pill pill-grey">Cancelled</span>}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

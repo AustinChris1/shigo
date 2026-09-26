@@ -2,28 +2,26 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BookOpenText, ClipboardList, Inbox, Plus } from "lucide-react";
 
 const items = [
-  { href: "/app", label: "Orders" },
-  { href: "/new", label: "New" },
-  { href: "/credits", label: "Unmatched" },
-  { href: "/ledger", label: "Ledger" },
+  { href: "/app", label: "Orders", Icon: ClipboardList },
+  { href: "/credits", label: "Unmatched", Icon: Inbox },
+  { href: "/new", label: "New", Icon: Plus, primary: true },
+  { href: "/ledger", label: "Ledger", Icon: BookOpenText },
 ];
 
 export function Nav() {
   const path = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-(--line) bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-md">
-        {items.map((it) => {
-          const active = path === it.href || (it.href !== "/app" && path.startsWith(it.href));
+    <nav className="app-nav" aria-label="App">
+      <div className="app-nav-row">
+        {items.map(({ href, label, Icon, primary }) => {
+          const active = path === href || (href !== "/app" && path.startsWith(href));
           return (
-            <Link
-              key={it.href}
-              href={it.href}
-              className={`flex-1 py-3 text-center text-sm font-semibold ${active ? "text-(--green)" : "text-(--muted)"}`}
-            >
-              {it.label}
+            <Link key={href} href={href} aria-current={active ? "page" : undefined} className={`app-nav-item ${active ? "is-active" : ""} ${primary ? "is-primary" : ""}`}>
+              <span className="app-nav-icon"><Icon size={primary ? 24 : 21} aria-hidden="true" /></span>
+              <span className="app-nav-label">{label}</span>
             </Link>
           );
         })}

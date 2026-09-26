@@ -19,4 +19,6 @@ export const photos = {
 } satisfies Record<string, Photo>;
 
 export const src = (p: Photo, w = 1200) => u(p.id, w);
-export const credits = Object.values(photos).filter((p, i, a) => a.findIndex((q) => q.user === p.user) === i);
+// Credit only what a page shows, one line per photographer.
+export const creditsFor = (used: Photo[]) => used.filter((p, i, a) => a.findIndex((q) => q.user === p.user) === i);
+export const landingPhotos: Photo[] = [photos.excited, photos.showing, photos.headscarf, photos.hand, photos.fruit, photos.tomatoes, photos.bananas, photos.striped, photos.corps, photos.market];

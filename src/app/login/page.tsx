@@ -45,7 +45,8 @@ export default async function Login() {
             <AccountField />
             <button className="btn btn-primary w-full" type="submit">Continue</button>
           </form>
-          <p className="lg-fine">Pilot build. Sign-in is by phone number only; OTP comes before public use.</p>
+          <p className="lg-fine">Demo build. Sign-in is by phone number only; OTP comes before public use.</p>
+          <p className="lg-fine">Photo by <a className="underline underline-offset-2" href={`https://unsplash.com/@${photos.stall.user}`} target="_blank" rel="noreferrer">{photos.stall.by}</a>, free to use under the Unsplash licence.</p>
         </div>
       </section>
     </main>

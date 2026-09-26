@@ -1,18 +1,54 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { Check, ChevronDown, Search } from "lucide-react";
 import banks from "@/lib/banks.json";
 
 type Result = { key: string; kind: "found"; name: string } | { key: string; kind: "notfound" } | { key: string; kind: "unavailable" };
+type Bank = { name: string; code: string; slug: string };
 
-// Bank picker plus account number; resolves the account name when a Paystack key is configured server-side.
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+// Searchable bank picker (type to filter, arrows to move, Enter to pick) plus the account number,
+// which resolves to the account holder's name when a Paystack key is configured server-side.
 export function AccountField({ defaultBankCode = "050", defaultAccount = "" }: { defaultBankCode?: string; defaultAccount?: string }) {
-  const [bank, setBank] = useState(defaultBankCode);
+  const list = banks as Bank[];
+  const [bank, setBank] = useState<Bank>(() => list.find((b) => b.code === defaultBankCode) ?? list[0]);
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
   const [account, setAccount] = useState(defaultAccount);
   const [result, setResult] = useState<Result | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const listId = useId();
+
+  const matches = useMemo(() => {
+    const q = norm(query);
+    if (!q) return list.slice(0, 12);
+    const starts = list.filter((b) => norm(b.name).startsWith(q));
+    const contains = list.filter((b) => !norm(b.name).startsWith(q) && norm(b.name).includes(q));
+    return [...starts, ...contains].slice(0, 12);
+  }, [query, list]);
+
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => { if (!wrapRef.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  const pick = (b: Bank) => { setBank(b); setQuery(""); setOpen(false); };
+
+  const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!open && (e.key === "ArrowDown" || e.key === "Enter")) { setOpen(true); e.preventDefault(); return; }
+    if (e.key === "ArrowDown") { setActive((a) => Math.min(a + 1, matches.length - 1)); e.preventDefault(); }
+    else if (e.key === "ArrowUp") { setActive((a) => Math.max(a - 1, 0)); e.preventDefault(); }
+    else if (e.key === "Enter") { if (matches[active]) pick(matches[active]); e.preventDefault(); }
+    else if (e.key === "Escape") { setOpen(false); setQuery(""); }
+    else if (e.key === "Tab") { setOpen(false); setQuery(""); }
+  };
 
   const valid = /^\d{10}$/.test(account);
-  const key = `${bank}:${account}`;
+  const key = `${bank.code}:${account}`;
   const status = !valid ? "idle" : result?.key === key ? result.kind : "checking";
 
   useEffect(() => {
@@ -20,7 +56,7 @@ export function AccountField({ defaultBankCode = "050", defaultAccount = "" }: {
     let cancelled = false;
     const t = setTimeout(async () => {
       try {
-        const r = await fetch(`/api/bank/resolve?account=${account}&bank=${encodeURIComponent(bank)}`, { cache: "no-store" });
+        const r = await fetch(`/api/bank/resolve?account=${account}&bank=${encodeURIComponent(bank.code)}`, { cache: "no-store" });
         const d = await r.json();
         if (cancelled) return;
         if (d.unavailable) setResult({ key, kind: "unavailable" });
@@ -31,17 +67,52 @@ export function AccountField({ defaultBankCode = "050", defaultAccount = "" }: {
       }
     }, 350);
     return () => { cancelled = true; clearTimeout(t); };
-  }, [account, bank, key, valid]);
+  }, [account, bank.code, key, valid]);
 
   return (
     <>
-      <div>
-        <label className="label" htmlFor="bankCode">Bank buyers pay into</label>
-        <select id="bankCode" name="bankCode" className="input" value={bank} onChange={(e) => setBank(e.target.value)}>
-          {banks.map((b) => (
-            <option key={b.code} value={b.code}>{b.name}</option>
-          ))}
-        </select>
+      <div ref={wrapRef} className="bank-picker">
+        <label className="label" htmlFor="bankSearch">Bank buyers pay into</label>
+        <input type="hidden" name="bankCode" value={bank.code} />
+        <div className="bank-picker-field">
+          <Search size={16} aria-hidden="true" className="bank-picker-icon" />
+          <input
+            id="bankSearch"
+            className="input bank-picker-input"
+            role="combobox"
+            aria-expanded={open}
+            aria-controls={listId}
+            aria-autocomplete="list"
+            aria-activedescendant={open && matches[active] ? `${listId}-${matches[active].code}` : undefined}
+            autoComplete="off"
+            placeholder={bank.name}
+            value={open ? query : bank.name}
+            onFocus={() => { setOpen(true); setActive(0); }}
+            onChange={(e) => { setQuery(e.target.value); setActive(0); setOpen(true); }}
+            onKeyDown={onKey}
+            onBlur={() => { setOpen(false); setQuery(""); }}
+          />
+          <ChevronDown size={16} aria-hidden="true" className="bank-picker-chev" />
+        </div>
+        {open && (
+          <ul id={listId} role="listbox" className="bank-picker-list" aria-label="Banks">
+            {matches.length === 0 && <li className="bank-picker-empty">No bank matches “{query}”.</li>}
+            {matches.map((b, i) => (
+              <li
+                key={b.code}
+                id={`${listId}-${b.code}`}
+                role="option"
+                aria-selected={b.code === bank.code}
+                className={`bank-picker-item ${i === active ? "is-active" : ""}`}
+                onMouseDown={(e) => { e.preventDefault(); pick(b); }}
+                onMouseEnter={() => setActive(i)}
+              >
+                <span>{b.name}</span>
+                {b.code === bank.code && <Check size={16} aria-hidden="true" />}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <div>
         <label className="label" htmlFor="accountNumber">Account number buyers pay into</label>

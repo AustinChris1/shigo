@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight, BadgeCheck, ExternalLink, FileText, Landmark, PauseCircle, Smartphone, Wallet } from "lucide-react";
 import { Mark } from "./Mark";
 import { ThemeToggle } from "./ThemeToggle";
-import { photos, src, credits, type Photo } from "@/lib/photos";
+import { photos, src, creditsFor, landingPhotos, type Photo } from "@/lib/photos";
 import "@/app/landing.css";
 
 const STEPS = [
@@ -44,12 +44,12 @@ function PhoneScene({ step }: { step: number }) {
   );
 }
 
+// The final figure is in the markup; with motion allowed it counts up from zero once it scrolls into view.
 function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = to.toLocaleString() + suffix; return; }
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const io = new IntersectionObserver(([e]) => {
       if (!e?.isIntersecting) return;
       io.disconnect();
@@ -65,7 +65,7 @@ function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
     io.observe(el);
     return () => io.disconnect();
   }, [to, suffix]);
-  return <span ref={ref}>0{suffix}</span>;
+  return <span ref={ref}>{to.toLocaleString()}{suffix}</span>;
 }
 
 export function Landing() {
@@ -91,12 +91,19 @@ export function Landing() {
       (async () => {
         const gsap = (await import("gsap")).default;
         const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+        const Lenis = (await import("lenis")).default;
         gsap.registerPlugin(ScrollTrigger);
+        // Inertial smooth scroll, driven by GSAP's ticker so ScrollTrigger stays in sync.
+        const lenis = new Lenis({ lerp: 0.1, anchors: true });
+        lenis.on("scroll", ScrollTrigger.update);
+        const tick = (t: number) => lenis.raf(t * 1000);
+        gsap.ticker.add(tick);
+        gsap.ticker.lagSmoothing(0);
         const tiles = mosaicRef.current?.querySelectorAll<HTMLElement>("[data-speed]") ?? [];
         const tweens = Array.from(tiles).map((el) =>
           gsap.to(el, { yPercent: -12 * Number(el.dataset.speed), ease: "none", scrollTrigger: { trigger: mosaicRef.current, start: "top bottom", end: "bottom top", scrub: 0.6 } }),
         );
-        cleanup = () => tweens.forEach((t) => { t.scrollTrigger?.kill(); t.kill(); });
+        cleanup = () => { tweens.forEach((t) => { t.scrollTrigger?.kill(); t.kill(); }); gsap.ticker.remove(tick); lenis.destroy(); };
       })();
     }
     return () => { reveal.disconnect(); steps.disconnect(); cleanup(); };
@@ -120,15 +127,15 @@ export function Landing() {
       {/* Hero: the words on the left, the sellers on the right, the mechanic looping on the first photo. */}
       <section className="ld-hero" aria-labelledby="hero-title">
         <div className="ld-hero-copy">
-          <h1 id="hero-title" className="font-display ld-h1">It has <span className="ld-h1-green">entered.</span></h1>
-          <p className="ld-lede">Shigo turns your screen green only when the bank says the money is in your account. Not when a buyer shows you a screenshot.</p>
+          <h1 id="hero-title" className="font-display ld-h1">No more fake alerts. <span className="ld-h1-green">Just real money.</span></h1>
+          <p className="ld-lede">Shigo confirms every sale straight from your bank in seconds, and turns your sales into an income record you can take to a lender.</p>
           <div className="ld-actions">
             <Link href="/login" className="btn btn-primary">Open Shigo <ArrowRight size={18} aria-hidden="true" /></Link>
             <a href="#how" className="btn btn-ghost">See it work</a>
           </div>
           <p className="ld-hero-note">Built for Ecobank Blaze accounts. An InnovateX 2026 entry.</p>
         </div>
-        <div ref={mosaicRef} className="ld-mosaic" aria-label="Nigerian sellers and buyers with their phones">
+        <div ref={mosaicRef} className="ld-mosaic" role="group" aria-label="Nigerian sellers and buyers with their phones">
           <figure className="ld-tile ld-tile-a" data-speed="1"><Pic p={photos.excited} priority sizes="(min-width: 900px) 22vw, 50vw" />
             <figcaption className="ld-live" aria-hidden="true">
               <span className="ld-live-mark"><Mark size={22} state="pending" className="ld-live-pending" /><Mark size={22} state="entered" className="ld-live-entered" /></span>
@@ -139,7 +146,7 @@ export function Landing() {
           <figure className="ld-tile ld-tile-b" data-speed="2"><Pic p={photos.showing} sizes="(min-width: 900px) 22vw, 50vw" /></figure>
           <figure className="ld-tile ld-tile-c" data-speed="1.5"><Pic p={photos.headscarf} sizes="(min-width: 900px) 18vw, 50vw" /></figure>
           <figure className="ld-tile ld-tile-d" data-speed="0.6"><Pic p={photos.hand} sizes="(min-width: 900px) 18vw, 50vw" /></figure>
-          <figure className="ld-tile ld-tile-e" data-speed="2.4"><Pic p={photos.corps} sizes="(min-width: 900px) 16vw, 50vw" /></figure>
+          <figure className="ld-tile ld-tile-e" data-speed="2.4"><Pic p={photos.fruit} sizes="(min-width: 900px) 16vw, 50vw" /></figure>
         </div>
       </section>
 
@@ -159,7 +166,7 @@ export function Landing() {
       <section id="how" className="ld-how" aria-labelledby="how-title">
         <div className="ld-how-head" data-reveal>
           <h2 id="how-title" className="font-display ld-h2">One order. One green screen.</h2>
-          <p className="ld-sub">Scroll the story. The phone on the right is what the seller sees.</p>
+          <p className="ld-sub">Scroll the story. The phone shows what the seller sees.</p>
         </div>
         <div className="ld-how-grid">
           <ol className="ld-steps">
@@ -171,11 +178,18 @@ export function Landing() {
               </li>
             ))}
           </ol>
-          <div className="ld-phone-wrap"><PhoneScene step={step} /></div>
+          <div className="ld-phone-wrap">
+            <PhoneScene step={step} />
+            <div className="ld-mobile-cap" aria-live="polite">
+              <div className="ld-mobile-dots" aria-hidden="true">{STEPS.map((_, i) => <span key={i} className={i <= step ? "on" : ""} />)}</div>
+              <h3 className="font-display ld-h3">{STEPS[step].title}</h3>
+              <p>{STEPS[step].body}</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Three guarantees, three icons. */}
+      {/* Three guarantees, one list. */}
       <section className="ld-rules" aria-label="What Shigo promises">
         <ul className="ld-rules-grid">
           {[
@@ -186,7 +200,7 @@ export function Landing() {
             const I = Icon as typeof Landmark;
             return (
               <li key={String(t)} className="ld-rule" data-reveal style={{ transitionDelay: `${i * 80}ms` }}>
-                <span className="ld-rule-icon"><I size={22} aria-hidden="true" /></span>
+                <span className="ld-rule-icon"><I size={24} aria-hidden="true" /></span>
                 <h3 className="font-display ld-h3">{String(t)}</h3>
                 <p>{String(b)}</p>
               </li>
@@ -202,30 +216,28 @@ export function Landing() {
           <p className="ld-sub">Fake receipts are cheap. Real credits are slow. Sellers are going back to cash.</p>
         </div>
         <div className="ld-why-grid">
-          <figure className="ld-stat" data-reveal>
-            <div className="ld-stat-img"><Pic p={photos.tomatoes} sizes="(min-width: 900px) 30vw, 100vw" /></div>
+          <figure className="ld-lead" data-reveal>
+            <div className="ld-lead-img"><Pic p={photos.tomatoes} sizes="(min-width: 900px) 55vw, 100vw" /></div>
             <figcaption>
               <div className="font-display ld-figure"><Counter to={52} suffix="%" /></div>
               <p>of 330 Lagos traders surveyed had been shown a fake alert. 27% lost money. 15% stopped taking transfers.</p>
-              <a className="ld-source" href="https://saharareporters.com/2026/09/20/investigation-how-online-platform-slipcraft-helps-scammers-fake-transfers-generate" target="_blank" rel="noreferrer">Punch survey, 2025, as reported by Sahara Reporters <ExternalLink size={12} aria-hidden="true" /></a>
+              <a className="ld-source" href="https://saharareporters.com/2026/09/20/investigation-how-online-platform-slipcraft-helps-scammers-fake-transfers-generate" target="_blank" rel="noreferrer">Punch survey, Feb 2025, as cited in Sahara Reporters, 20 Sep 2026 <ExternalLink size={12} aria-hidden="true" /></a>
             </figcaption>
           </figure>
-          <figure className="ld-stat" data-reveal style={{ transitionDelay: "90ms" }}>
-            <div className="ld-stat-img"><Pic p={photos.bananas} sizes="(min-width: 900px) 30vw, 100vw" /></div>
-            <figcaption>
-              <div className="font-display ld-figure"><Counter to={61000} /></div>
-              <p>people sit in the Telegram group of a site that prints fake OPay, Kuda and PalmPay receipts for 650 points each.</p>
+          <ul className="ld-side">
+            <li className="ld-stat" data-reveal style={{ transitionDelay: "90ms" }}>
+              <div className="ld-stat-img"><Pic p={photos.bananas} sizes="64px" /></div>
+              <div className="ld-figure-sm"><Counter to={61000} suffix="+" /></div>
+              <p>people in the Telegram group of a site that prints fake OPay, Kuda and PalmPay receipts for 650 points each.</p>
               <a className="ld-source" href="https://saharareporters.com/2026/09/20/investigation-how-online-platform-slipcraft-helps-scammers-fake-transfers-generate" target="_blank" rel="noreferrer">Sahara Reporters, 20 Sep 2026 <ExternalLink size={12} aria-hidden="true" /></a>
-            </figcaption>
-          </figure>
-          <figure className="ld-stat" data-reveal style={{ transitionDelay: "180ms" }}>
-            <div className="ld-stat-img"><Pic p={photos.striped} sizes="(min-width: 900px) 30vw, 100vw" /></div>
-            <figcaption>
-              <div className="font-display ld-figure"><Counter to={53} suffix="%" /></div>
+            </li>
+            <li className="ld-stat" data-reveal style={{ transitionDelay: "180ms" }}>
+              <div className="ld-stat-img"><Pic p={photos.striped} sizes="64px" /></div>
+              <div className="ld-figure-sm"><Counter to={53} suffix="%" /></div>
               <p>of student businesses sell mainly on WhatsApp, and two in three Nigerian students already earn while in school.</p>
               <a className="ld-source" href="https://techcabal.com/2026/03/16/nigerias-campus-gig-economy-may-be-generating-%E2%82%A6400-billion-a-year/" target="_blank" rel="noreferrer">The Garage via TechCabal, Mar 2026 <ExternalLink size={12} aria-hidden="true" /></a>
-            </figcaption>
-          </figure>
+            </li>
+          </ul>
         </div>
       </section>
 
@@ -272,7 +284,7 @@ export function Landing() {
           <span>Shigo is Hausa for “enter”. Built for Ecobank Blaze accounts. An InnovateX 2026 entry.</span>
         </div>
         <p className="ld-credits">
-          Photos, free to use under the Unsplash licence: {credits.map((c, i) => (
+          Photos, free to use under the Unsplash licence: {creditsFor(landingPhotos).map((c, i) => (
             <span key={c.user}>{i > 0 ? ", " : ""}<a href={`https://unsplash.com/@${c.user}`} target="_blank" rel="noreferrer">{c.by}</a></span>
           ))}.
         </p>
