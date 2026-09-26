@@ -29,7 +29,9 @@ The project is linked to Vercel and deploys from `main`. Two things make it work
 
 Set `PAYSTACK_SECRET_KEY` and `ALLOW_SIMULATED_CREDITS` in the Vercel project's environment variables. Keep the simulator off on any deployment you show as a real rail.
 
-Sign in at `/login` with any 11-digit phone number and the account number buyers pay into. That account number is what the rail's webhook must carry as the receiving account.
+`/` is the landing page (story first; signed-in sellers are sent to `/app`). Sign in at `/login` with any 11-digit phone number, pick the bank from the live Nigerian bank list (Ecobank first; `src/lib/banks.json`, from Paystack's public bank endpoint), and enter the account number buyers pay into. With `PAYSTACK_SECRET_KEY` set, the account name resolves under the field as you type. That account number is what the rail's webhook must carry as the receiving account.
+
+Design decisions for the landing page live in `PRODUCT.md` and `.impeccable/surfaces/`; `node scripts/landing-shots.mjs` captures it at 1440 and 390 for review.
 
 ## The five-step test script
 

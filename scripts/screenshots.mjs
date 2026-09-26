@@ -10,7 +10,7 @@ if (!sellerId || !orderId) {
 mkdirSync(outDir, { recursive: true });
 const base = "http://localhost:3000";
 const pages = [
-  ["login", "/login"], ["orders", "/"], ["new", "/new"], ["order-detail", `/orders/${orderId}`],
+  ["login", "/login"], ["orders", "/app"], ["new", "/new"], ["order-detail", `/orders/${orderId}`],
   ["credits", "/credits"], ["ledger", "/ledger"], ["ledger-export", "/ledger/export"], ["report", `/report/${orderId}`],
 ];
 
