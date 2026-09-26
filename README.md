@@ -1,78 +1,81 @@
 # Shigo
 
-*It has entered.* The seller's screen turns green only when the bank says so.
+**No more fake alerts. Just real money.** Shigo confirms a seller's sale straight from their bank, and turns every confirmed payment into an income record they can take to a lender.
 
-Shigo is a mobile-first web app for student sellers on WhatsApp. The seller creates an order, the buyer pays by normal transfer from any bank, and the order turns green only when the receiving bank's webhook confirms the credit into the seller's Ecobank Blaze account. Every confirmed payment becomes a row in a ledger the seller owns and can export as an income record.
+Live: **https://useshigo.vercel.app**
 
-Built for InnovateX 2026 (Ecobank / Blaze), Track A: Inclusive Finance. See `Shigo-InnovateX-2026-Build-Brief.docx` for the full brief.
+Shigo (Hausa for "enter") is a mobile web app for Nigerian student sellers who sell on WhatsApp. The seller creates an order, the buyer pays by normal bank transfer from any bank, and the order turns green only when the receiving bank confirms the credit. A buyer's screenshot, SMS or app cannot change the seller's screen.
 
-**The mark:** the account is a box with a slot; the coin sits outside it, amber, until the bank confirms, then drops inside and turns green. The logo is the product's one state change. Wordmark in Bricolage Grotesque; mark lives in `src/components/Mark.tsx` and `public/icon.svg`.
+Built for Blaze by Ecobank InnovateX 2026, Track A (Inclusive Finance). Built for Ecobank Blaze accounts; not affiliated with Ecobank. The full brief is `Shigo-InnovateX-2026-Build-Brief.docx`; what's done and what's next is in [TODO.md](TODO.md).
+
+## What it does
+
+- **Sign in with bank verification.** Pick your bank (searchable list of every Nigerian bank), enter your account number, and the name on the account appears as you type. Your name must match it. A 6-digit code is then texted to your phone.
+- **Collect a payment.** Create an order, send the payment details on WhatsApp, and keep the screen open. It turns green, with a sound and a toast, the moment the bank confirms.
+- **Never guess with money.** Two orders at the same amount? The payment is held and you pick. Money with no matching order is kept under Unmatched.
+- **Income record.** Every confirmed payment is a dated ledger row; export a one-page record for a loan application.
+- **Report a fake receipt.** Save what you were shown, on your own account, to send to your bank.
+- **Installable app** (Android install button, iPhone Add to Home Screen), light and dark themes.
 
 ## Run it locally
 
 ```bash
 npm install
-cp .env.example .env        # ALLOW_SIMULATED_CREDITS=1 is already set for local testing
-docker run -d --name shigo-pg -e POSTGRES_PASSWORD=shigo -p 5433:5432 postgres:16
-npx prisma db push          # creates the tables
-npm run dev                 # http://localhost:3000
+cp .env.example .env     # then fill in DATABASE_URL (Neon) and SESSION_SECRET
+npx prisma db push       # creates the tables
+npm run dev              # http://localhost:3000
 ```
 
-Or skip Docker and point `DATABASE_URL` at the Neon database Vercel created: `vercel env pull .env`.
+With `vercel env pull .env` you get the same Neon database the live site uses.
 
-## Deploy on Vercel
+## Environment
 
-The project is linked to Vercel and deploys from `main`. Two things make it work on serverless:
-
-- Postgres (Neon) instead of a file database. Add it once in the Vercel dashboard: Storage, Create Database, Neon. That sets `DATABASE_URL` on the project; the build runs `prisma db push` against it.
-- The phone polls `/api/orders/status` every 2 seconds as well as listening on SSE. On a single Node server (Railway, Render, `next start`) SSE fires instantly; on Vercel the poll carries the green moment, at most 2 seconds late.
-
-Set `PAYSTACK_SECRET_KEY` and `ALLOW_SIMULATED_CREDITS` in the Vercel project's environment variables. Keep the simulator off on any deployment you show as a real rail.
-
-`/` is the landing page (story first; signed-in sellers are sent to `/app`). Sign in at `/login` with any 11-digit phone number, pick the bank from the live Nigerian bank list (Ecobank first; `src/lib/banks.json`, from Paystack's public bank endpoint), and enter the account number buyers pay into. With `PAYSTACK_SECRET_KEY` set, the account name resolves under the field as you type. That account number is what the rail's webhook must carry as the receiving account.
-
-Design decisions for the landing page live in `PRODUCT.md` and `.impeccable/surfaces/`; `node scripts/landing-shots.mjs` captures it at 1440 and 390 for review.
-
-## The five-step test script
-
-1. In the app, create an order for ₦4,500.
-2. Fire a credit for ₦4,500 at the account you signed up with:
-   ```bash
-   curl -X POST localhost:3000/api/dev/simulate -H 'content-type: application/json' \
-     -d '{"accountRef":"0123456789","amountKobo":450000,"narration":"SG-XXXX","payerName":"Ada"}'
-   ```
-3. The order turns green within seconds; the ledger shows one new row.
-4. `/ledger/export` produces a one-page record (Save as PDF).
-5. Fire a credit for a different amount; nothing turns green, and it appears under Unmatched.
-
-`node scripts/e2e-local.mjs` runs the matcher rules end to end against a running dev server.
-
-## Rails
-
-All rails are normalised into one `CreditEvent` (`src/lib/rails/types.ts`) before matching. The matcher never knows which bank it is talking to.
-
-| Rail | Endpoint | Status |
+| Variable | What it does | Without it |
 | --- | --- | --- |
-| Ecobank Notification Service (primary) | `POST /api/webhooks/ecobank` | Adapter written against the public sandbox description; payload fields and signing must be confirmed against a real sandbox callback. |
-| Paystack Dedicated Virtual Accounts, test mode (declared fallback) | `POST /api/webhooks/paystack` | HMAC-SHA512 verification on the raw body; handles `charge.success` on `dedicated_nuban`. |
-| Simulator (local only) | `POST /api/dev/simulate` | Enabled only when `ALLOW_SIMULATED_CREDITS=1`. Never on a deployment shown as a real rail. |
+| `DATABASE_URL` | Neon Postgres | App does not start |
+| `SESSION_SECRET` | Signs the sign-in cookie (32+ random characters) | Required in production |
+| `PAYSTACK_SECRET_KEY` | Bank-name check at sign-in (all banks); Paystack payment webhooks | Name check is off; sign-in still works |
+| `TERMII_API_KEY`, `TERMII_BASE_URL`, `TERMII_SENDER_ID` | Texts the sign-in code (Termii, "dnd" route) | Demo mode: the code is shown on screen |
+| `ECOBANK_*` | Ecobank's own account check and payment notifications | Paystack is used instead |
+| `ALLOW_SIMULATED_CREDITS` | Test button that fakes a bank credit | Keep `0` on the live site |
 
-For real webhooks in development, expose the server with `ngrok http 3000` or `cloudflared tunnel --url http://localhost:3000` and register the public URL with the rail.
+## How payments reach Shigo
 
-## Matching rules (src/lib/match.ts)
+Every payment source is turned into one `CreditEvent` (`src/lib/rails/types.ts`) before matching, so the matcher never knows which bank sent it.
 
-1. Same `(rail, externalId)` is processed once. Replays return the stored result.
-2. An order reference in the narration (`SG-XXXX`) wins when the amount is exact.
+| Source | Endpoint | Status |
+| --- | --- | --- |
+| Ecobank Notification Service | `POST /api/webhooks/ecobank` | Built; field names wait on Ecobank's sandbox reply ([docs/ecobank-api-notes.md](docs/ecobank-api-notes.md)) |
+| Paystack dedicated virtual accounts | `POST /api/webhooks/paystack` | Working; signature checked on every call |
+| Local simulator | `POST /api/dev/simulate` | Only when `ALLOW_SIMULATED_CREDITS=1` |
+
+Bank-name checks: Ecobank accounts use Ecobank's Validate Account Name once Ecobank credentials are set (`src/lib/ecobank.ts`); all other banks, and Ecobank until then, use Paystack.
+
+## Matching rules (`src/lib/match.ts`)
+
+1. The same bank transaction is processed once, however many times it arrives.
+2. An order reference in the transfer note (`SG-XXXX`) wins when the amount is exact.
 3. Otherwise exact amount, only when the seller has exactly one open order at that amount in the last 24 hours.
-4. Two or more fit: the credit is HELD and the seller picks. Never auto-green.
-5. Nothing fits: the credit is UNMATCHED and shown to the seller to assign. A real payment is never lost.
+4. Two or more orders fit: the money is held and the seller picks. Never auto-green.
+5. Nothing fits: kept under Unmatched for the seller to assign. A real payment is never lost.
 
-## What is deliberately not here
+## Tests
 
-No shared blacklist, no receipt image detection, no BVN lookups, no watchlist claims. The report feature stores what the seller was shown, on the seller's own account, for the seller to send to their own bank.
+Run against a local server (`npm run build && npm start`):
 
-## Before any public pilot
+| Script | Checks |
+| --- | --- |
+| `node scripts/e2e-local.mjs` | Matching rules end to end |
+| `node scripts/name-match-check.mts` | Bank-name matching ("Ada Obi" vs "OBI ADAEZE CHIOMA") |
+| `node scripts/bank-picker-check.mjs` | Bank search, keyboard use |
+| `node scripts/signin-check.mjs` | Sign-in with the code step |
+| `node scripts/toast-check.mjs` | Toasts, install prompt, live payment |
+| `node scripts/landing-shots.mjs` | Landing and sign-in screenshots, light and dark |
 
-- Replace the phone-only sign-in (`src/lib/session.ts`) with OTP and a signed session.
-- Switch `DATABASE_URL` to Postgres and change the provider in `prisma/schema.prisma`.
-- Set `ALLOW_SIMULATED_CREDITS=0`.
+## Deploy
+
+Vercel project `shigo`, deploying from `main`. Server functions run in London (`vercel.json`) beside the Neon database. On Vercel the green screen arrives by a 2-second poll; on a single server it is instant over SSE.
+
+## Deliberately not here
+
+No shared blacklist of buyers, no receipt image detection, no BVN lookups. Fake-receipt reports stay on the seller's own account.

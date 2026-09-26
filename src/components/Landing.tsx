@@ -279,11 +279,38 @@ export function Landing() {
       </section>
 
       <footer className="ld-foot">
-        <div className="ld-foot-row">
-          <span className="ld-brand"><Mark size={18} state="entered" /><span className="font-display">Shigo</span></span>
-          <span>Shigo is Hausa for “enter”. Built for Ecobank Blaze accounts. An InnovateX 2026 entry.</span>
+        <div className="ld-foot-top">
+          <div className="ld-foot-brand">
+            <Link href="/" className="ld-brand" aria-label="Shigo home"><Mark size={22} state="entered" /><span className="font-display">Shigo</span></Link>
+            <p>Your screen turns green only when the bank confirms the money. Built for Ecobank Blaze accounts.</p>
+            <Link href="/login" className="btn btn-primary ld-foot-cta">Open Shigo <ArrowRight size={16} aria-hidden="true" /></Link>
+          </div>
+          <nav className="ld-foot-cols" aria-label="Footer">
+            <div>
+              <h3>Product</h3>
+              <a href="#how">How it works</a>
+              <a href="#why">Why now</a>
+              <a href="#record">Income record</a>
+              <Link href="/login">Sign in</Link>
+            </div>
+            <div>
+              <h3>For sellers</h3>
+              <Link href="/login">Create an account</Link>
+              <Link href="/new">Collect a payment</Link>
+              <Link href="/ledger">Your ledger</Link>
+            </div>
+            <div>
+              <h3>Project</h3>
+              <a href="https://github.com/AustinChris1/shigo" target="_blank" rel="noreferrer">Source code</a>
+              <a href="https://www.innovatex.africa/" target="_blank" rel="noreferrer">InnovateX 2026</a>
+              <a href="https://github.com/AustinChris1/shigo/issues" target="_blank" rel="noreferrer">Report a problem</a>
+            </div>
+          </nav>
         </div>
-        <p className="ld-credits">Rails: Ecobank Notification Service, Paystack test mode. A simulated or test credit is always labelled.</p>
+        <div className="ld-foot-bottom">
+          <span>© {new Date().getFullYear()} Shigo. An InnovateX 2026 entry.</span>
+          <span>Shigo is Hausa for “enter”. Not affiliated with Ecobank.</span>
+        </div>
       </footer>
     </div>
   );

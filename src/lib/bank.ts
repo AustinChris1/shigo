@@ -1,7 +1,26 @@
-// Account verification against the bank's own record, via Paystack's resolve endpoint.
+import { ecobankConfigured, validateEcobankAccount } from "./ecobank";
+
+// Account verification against the bank's own record: Ecobank's Validate Account Name for Ecobank accounts once
+// Ecobank credentials exist, otherwise Paystack's resolver (which covers every Nigerian bank).
 export type Resolve = { status: "found"; name: string } | { status: "notfound"; message: string } | { status: "unavailable" };
 
+const ECOBANK_NIP_CODE = "050";
+
 export async function resolveAccount(account: string, bankCode: string): Promise<Resolve> {
+  if (bankCode === ECOBANK_NIP_CODE && ecobankConfigured()) {
+    try {
+      const r = await validateEcobankAccount(account);
+      if (r.found && r.active) return { status: "found", name: r.name };
+      if (r.found) return { status: "notfound", message: "This Ecobank account is not active." };
+      return { status: "notfound", message: "not found" };
+    } catch {
+      /* Ecobank unreachable or token refused: fall back to Paystack below */
+    }
+  }
+  return resolveWithPaystack(account, bankCode);
+}
+
+async function resolveWithPaystack(account: string, bankCode: string): Promise<Resolve> {
   const key = process.env.PAYSTACK_SECRET_KEY;
   if (!key || key.includes("dummy")) return { status: "unavailable" };
   try {

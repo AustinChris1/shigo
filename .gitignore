@@ -51,8 +51,5 @@ screenshots/
 
 .vercel
 
-# design-tool transient state (surface briefs stay tracked)
-.impeccable/questions/
-.impeccable/review/
-.impeccable/build/
-.impeccable/mocks/
+# design-tool working files
+.impeccable/

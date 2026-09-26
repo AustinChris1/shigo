@@ -17,6 +17,7 @@ Deadline: InnovateX 2026 regional selection (dates unpublished), then the finale
 - [x] Toasts for sign-in, sign-out, orders, payments, held money and reports; dismissible "Install Shigo" prompt (Android install button, iPhone steps), PNG app icons, service worker
 - [x] Sign-in by one-time SMS code (Termii, "dnd" route) with a signed session cookie; demo mode shows the code on screen until `TERMII_API_KEY` and `TERMII_BASE_URL` are set
 - [x] Live at https://useshigo.vercel.app
+- [x] Ecobank Validate Account Name client (`src/lib/ecobank.ts`), used for Ecobank accounts once `ECOBANK_*` credentials are set; Paystack covers every bank until then
 - [x] Smooth scroll on the landing page (Lenis, synced with the scroll animations; off for reduced motion)
 - [x] Tests: `node scripts/e2e-local.mjs` (matcher rules), `node scripts/bank-picker-check.mjs` (bank search), `node scripts/name-match-check.mts` (bank name rule), `node scripts/signin-check.mjs` and `node scripts/toast-check.mjs` (sign-in and toasts), `node scripts/screenshots.mjs` and `node scripts/landing-shots.mjs` (visual review)
 

@@ -137,8 +137,20 @@ html:has(.ld) { scroll-behavior: smooth; }
 .ld-cta-icons { list-style: none; padding: 0; margin: 26px 0 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; font-size: .9rem; font-weight: 600; color: rgba(255, 255, 255, .9); }
 .ld-cta-icons li { display: inline-flex; align-items: center; gap: 8px; }
 
-.ld-foot { padding: 40px var(--pad) 32px; max-width: var(--col); margin: 0 auto; display: grid; gap: 12px; font-size: .85rem; color: var(--muted); }
-.ld-foot-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.ld-foot { margin-top: 56px; border-top: 1px solid var(--line); background: var(--bg-2); color: var(--muted); font-size: .9rem; }
+.ld-foot-top { max-width: var(--col); margin: 0 auto; padding: 48px var(--pad) 32px; display: grid; gap: 36px; }
+.ld-foot-brand { display: grid; gap: 14px; justify-items: start; max-width: 36ch; }
+.ld-foot-brand .ld-brand { color: var(--ink); }
+.ld-foot-cta { min-height: 42px; padding: 0 16px; font-size: .92rem; }
+.ld-foot-cols { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 20px; }
+.ld-foot-cols h3 { margin-bottom: 10px; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); }
+.ld-foot-cols a { display: block; padding: 5px 0; transition: color 160ms ease; }
+.ld-foot-bottom { max-width: var(--col); margin: 0 auto; padding: 18px var(--pad) 28px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; font-size: .8rem; }
+@media (min-width: 900px) {
+  .ld-foot-top { grid-template-columns: 1.2fr 2fr; padding-top: 64px; }
+  .ld-foot-cols { grid-template-columns: repeat(3, 1fr); }
+}
+@media (hover: hover) and (pointer: fine) { .ld-foot-cols a:hover { color: var(--ink); } }
 .ld-credits { font-size: .78rem; }
 .ld-credits a { text-decoration: underline; text-underline-offset: 3px; }
 
@@ -184,7 +196,7 @@ html:has(.ld) { scroll-behavior: smooth; }
 /* Phones: the phone and the current step share one pinned screen with its own ground; the step list scrolls invisibly beneath as the timeline. */
 @media (max-width: 899px) {
   .ld-how-grid { display: flex; flex-direction: column; gap: 0; margin-top: 16px; }
-  .ld-phone-wrap { order: -1; position: sticky; top: 57px; height: calc(100svh - 57px); display: grid; align-content: center; justify-items: center; gap: 16px; background: var(--bg); padding: 12px 0; }
+  .ld-phone-wrap { order: -1; align-self: stretch; width: 100%; position: sticky; top: 57px; height: calc(100svh - 57px); display: grid; align-content: center; justify-items: center; gap: 16px; background: var(--bg); padding: 12px 0; }
   .ld-phone { width: min(230px, 58vw); }
   .ld-steps { margin-top: calc(-1 * (100svh - 57px)); padding: 0; gap: 0; }
   .ld-step { height: 75svh; visibility: hidden; }
