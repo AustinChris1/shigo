@@ -11,6 +11,7 @@ export type OrderRow = {
   id: string;
   amountKobo: number;
   reference: string;
+  buyerName?: string | null;
   note: string | null;
   state: string;
   createdAt: string;
@@ -93,7 +94,7 @@ export function LiveOrders({ initial }: { initial: OrderRow[] }) {
         setJustPaid((s) => new Set(s).add(ev.orderId));
         chime();
         if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
-        toast.success(`${naira(ev.amountKobo)} has entered`, { id: `paid-${ev.orderId}`, description: `Order ${ev.reference} is confirmed by the bank. Hand over the goods.` });
+        toast.success(`${naira(ev.amountKobo)} has entered`, { id: `paid-${ev.orderId}`, description: "Confirmed by the bank. Hand over the goods." });
       } else if (ev.type === "credit.held") {
         setNotice(`${naira(ev.amountKobo)} came in and fits ${ev.candidateOrderIds.length} orders. Pick which one.`);
         toast.warning(`${naira(ev.amountKobo)} needs you`, { id: `held-${ev.creditId}`, description: "It fits more than one order. Pick which one.", action: { label: "Open", onClick: () => router.push("/credits") } });
@@ -138,7 +139,7 @@ export function LiveOrders({ initial }: { initial: OrderRow[] }) {
                 <span className="app-row-icon is-wait"><Mark size={22} state="pending" /></span>
                 <span className="app-row-main">
                   <span className="app-row-amt">{naira(o.amountKobo)}</span>
-                  <span className="app-row-meta">{o.reference}{o.note ? ` · ${o.note}` : ""} · {time(o.createdAt)}</span>
+                  <span className="app-row-meta">{[o.buyerName, o.note].filter(Boolean).join(" · ") || "Any buyer"} · {time(o.createdAt)}</span>
                 </span>
                 <span className="pill pill-amber">Not yet</span>
               </Link>
@@ -157,7 +158,7 @@ export function LiveOrders({ initial }: { initial: OrderRow[] }) {
                   <span className={`app-row-icon ${o.state === "PAID" ? "is-paid" : ""}`}><Mark size={22} state={o.state === "PAID" ? "entered" : "mono"} /></span>
                   <span className="app-row-main">
                     <span className="app-row-amt">{naira(o.amountKobo)}</span>
-                    <span className="app-row-meta">{o.reference}{o.note ? ` · ${o.note}` : ""}{o.paidAt ? ` · ${time(o.paidAt)}` : ""}</span>
+                    <span className="app-row-meta">{[o.buyerName, o.note].filter(Boolean).join(" · ") || "Payment"}{o.paidAt ? ` · ${time(o.paidAt)}` : ""}</span>
                   </span>
                   {o.state === "PAID" ? <span className="pill pill-green">Shigo</span> : <span className="pill pill-grey">Cancelled</span>}
                 </Link>

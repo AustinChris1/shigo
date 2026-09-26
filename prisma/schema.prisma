@@ -32,7 +32,8 @@ model Order {
   sellerId    String
   seller      Seller       @relation(fields: [sellerId], references: [id])
   amountKobo  Int
-  reference   String       @unique // short code the buyer can put in narration, e.g. SG-7K2Q
+  reference   String       @unique // internal order id shown to the seller; buyers are never asked to type it
+  buyerName   String? // who the seller expects to pay; matched against the sender name on the bank credit
   note        String?
   state       String       @default("PENDING")
   createdAt   DateTime     @default(now())

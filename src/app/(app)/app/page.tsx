@@ -26,6 +26,7 @@ export default async function Home() {
     id: o.id,
     amountKobo: o.amountKobo,
     reference: o.reference,
+    buyerName: o.buyerName,
     note: o.note,
     state: o.state,
     createdAt: o.createdAt.toISOString(),

@@ -49,7 +49,7 @@ export default async function Credits() {
                   <option value="" disabled>Which order is this?</option>
                   {fits.map((o) => (
                     <option key={o.id} value={o.id}>
-                      {o.reference}{o.note ? ` · ${o.note}` : ""} · {new Date(o.createdAt).toLocaleTimeString("en-NG", { hour: "2-digit", minute: "2-digit" })}
+                      {[o.buyerName, o.note].filter(Boolean).join(" · ") || "Order"} · {new Date(o.createdAt).toLocaleTimeString("en-NG", { hour: "2-digit", minute: "2-digit" })}
                     </option>
                   ))}
                 </select>

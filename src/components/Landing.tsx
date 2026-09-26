@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, BadgeCheck, ExternalLink, FileText, Landmark, PauseCircle, Smartphone, Wallet } from "lucide-react";
+import { ArrowRight, BadgeCheck, ExternalLink, FileText, Landmark, PauseCircle, Smartphone, Wallet, ChevronDown } from "lucide-react";
 import { Mark } from "./Mark";
 import { ThemeToggle } from "./ThemeToggle";
 import { photos, src, type Photo } from "@/lib/photos";
@@ -68,6 +68,18 @@ function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
   return <span ref={ref}>{to.toLocaleString()}{suffix}</span>;
 }
 
+const FAQ: [string, string][] = [
+  ["My bank already sends alerts. Why do I need Shigo?", "Alerts can arrive late, and they don't say which sale they belong to. With five buyers in one evening you end up matching credits by hand, or checking the buyer's phone instead of your own. Shigo puts each order on your screen and flips it green when the bank confirms that sale, then keeps it as a record: date, amount, buyer, item."],
+  ["Does my buyer need to install anything or type a code?", "No. Your buyer pays the normal way, from any bank app, USSD or a bank branch, and writes whatever they like in the narration. Only you use Shigo."],
+  ["Does Shigo hold my money?", "No. The money goes straight into your own bank account. Shigo only reads that it arrived. It can't move, spend or withdraw anything."],
+  ["What if two buyers pay the same amount?", "When you create an order, you can add the buyer's name. Shigo uses the sender's name on the bank credit to tell them apart. If it still can't tell, it holds the money and asks you which order it's for. It never guesses."],
+  ["What if someone pays from a friend's or sibling's account?", "The name won't match the buyer you expected, so Shigo holds that payment and asks you to confirm. The money is never lost, and nothing turns green by mistake."],
+  ["I receive payments with OPay or Moniepoint. Can I use Shigo?", "Shigo is built for Ecobank Blaze accounts first. Support for other banks and wallets is being planned. For now, payments into those accounts won't turn green on their own."],
+  ["My buyer uses a button phone. Will it work?", "Yes. Buyers can pay by USSD from any phone. Only the seller needs a smartphone to open Shigo."],
+  ["Can the income record get me a loan?", "It's a clear record of sales your bank confirmed, which you choose to share. Whether it helps with a loan, and how much you can borrow, is up to the lender."],
+  ["Is my information safe?", "Shigo keeps your name, phone number and account number, and the orders you create. It never asks for your bank password, PIN or BVN, and it cannot move money."],
+];
+
 export function Landing() {
   const [step, setStep] = useState(0);
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -117,6 +129,7 @@ export function Landing() {
           <a href="#how">How it works</a>
           <a href="#why">Why now</a>
           <a href="#record">The record</a>
+          <a href="#faq">FAQ</a>
         </nav>
         <div className="ld-top-actions">
           <ThemeToggle className="icon-btn" />
@@ -259,6 +272,22 @@ export function Landing() {
         </div>
       </section>
 
+      {/* Questions sellers actually ask. */}
+      <section id="faq" className="ld-faq" aria-labelledby="faq-title">
+        <div className="ld-faq-head">
+          <h2 id="faq-title" className="font-display ld-h2">Questions sellers ask</h2>
+          <p className="ld-sub">Straight answers, including what Shigo does not do yet.</p>
+        </div>
+        <div className="ld-faq-list">
+          {FAQ.map(([q, a]) => (
+            <details key={q} className="ld-faq-item">
+              <summary><span>{q}</span><ChevronDown size={18} aria-hidden="true" className="ld-faq-chev" /></summary>
+              <p>{a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       {/* The door. */}
       <section className="ld-cta" aria-labelledby="cta-title">
         <div className="ld-cta-img"><Pic p={photos.market} sizes="100vw" /></div>
@@ -291,6 +320,7 @@ export function Landing() {
               <a href="#how">How it works</a>
               <a href="#why">Why now</a>
               <a href="#record">Income record</a>
+              <a href="#faq">FAQ</a>
               <Link href="/login">Sign in</Link>
             </div>
             <div>

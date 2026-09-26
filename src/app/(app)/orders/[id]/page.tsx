@@ -20,7 +20,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
     `Please pay ${naira(order.amountKobo)}${order.note ? ` for ${order.note}` : ""}.`,
     `${seller.bankName ?? "Bank"}: ${seller.accountNumber ?? "(account)"}`,
     `Name: ${seller.name}`,
-    `Put ${order.reference} in the narration. I will see it the moment it lands.`,
+    `I will see it the moment it lands.`,
   ].join("\n");
   const wa = `https://wa.me/?text=${encodeURIComponent(payText)}`;
 
@@ -34,7 +34,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         orderId={order.id}
         initialState={order.state}
         amountKobo={order.amountKobo}
-        reference={order.reference}
+        reference={order.buyerName ? `From ${order.buyerName}` : "Any buyer"}
         note={order.note}
         paidAt={order.paidAt?.toISOString() ?? null}
         payer={order.credit?.payerName ?? null}
@@ -47,10 +47,6 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
             <h2 className="text-sm font-semibold text-(--muted)">Buyer pays to</h2>
             <div className="text-lg font-semibold">{seller.bankName ?? "Bank"} · {seller.accountNumber ?? "add your account number"}</div>
             <div className="text-sm">{seller.name}</div>
-            <div className="text-sm">
-              Narration: <span className="font-mono font-bold">{order.reference}</span>
-              <span className="block text-xs text-(--muted)">Optional. If the buyer forgets it, exact amount still matches when this is your only open order at that amount.</span>
-            </div>
             <ShareButton href={wa} />
           </section>
 

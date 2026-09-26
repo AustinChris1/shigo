@@ -108,12 +108,13 @@ export async function createOrderAction(formData: FormData) {
   const seller = await requireSeller();
   const amountKobo = toKobo(String(formData.get("amount") ?? ""));
   const note = String(formData.get("note") ?? "").trim() || null;
+  const buyerName = String(formData.get("buyerName") ?? "").trim().split(/ +/).join(" ").slice(0, 60) || null;
 
   // Retry on the rare reference collision.
   let order = null;
   for (let i = 0; i < 5 && !order; i++) {
     try {
-      order = await db.order.create({ data: { sellerId: seller.id, amountKobo, note, reference: newReference() } });
+      order = await db.order.create({ data: { sellerId: seller.id, amountKobo, note, buyerName, reference: newReference() } });
     } catch {
       /* collision, try again */
     }
@@ -121,7 +122,7 @@ export async function createOrderAction(formData: FormData) {
   if (!order) throw new Error("could not create order, try again");
   emitToSeller(seller.id, { type: "order.created", orderId: order.id });
   revalidatePath("/app");
-  await flash("success", `Order ${order.reference} created`, "Send the payment details to your buyer on WhatsApp.");
+  await flash("success", buyerName ? `Waiting for ${buyerName.split(" ")[0]}'s payment` : "Order created", "Send your account details to the buyer on WhatsApp.");
   redirect(`/orders/${order.id}`);
 }
 

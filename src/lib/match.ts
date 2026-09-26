@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { emitToSeller } from "./events";
 import type { CreditEvent } from "./rails/types";
+import { nameTallies } from "./names";
 
 // Matching rules are product decisions (README "Matching rules"): never auto-green an ambiguous credit.
 
@@ -41,7 +42,7 @@ export async function ingestCredit(ev: CreditEvent): Promise<MatchResult> {
 
   const since = new Date(Date.now() - OPEN_ORDER_WINDOW_MS);
 
-  // 2. Reference match
+  // 2. Reference in the narration still wins if a buyer happens to include it (never required).
   const refHit = ev.narration?.match(REFERENCE_RE)?.[0]?.toUpperCase();
   if (refHit) {
     const order = await db.order.findFirst({ where: { sellerId: seller.id, reference: refHit, state: "PENDING" } });
@@ -51,15 +52,27 @@ export async function ingestCredit(ev: CreditEvent): Promise<MatchResult> {
     // Reference with a different amount is never forced; fall through to the amount rules.
   }
 
-  // 3/4/5. Amount match
+  // 3. Amount, then the sender's name (the bank credit carries it; buyers never type a code).
   const candidates = await db.order.findMany({
     where: { sellerId: seller.id, state: "PENDING", amountKobo: ev.amountKobo, createdAt: { gte: since } },
     orderBy: { createdAt: "asc" },
   });
+  const payer = ev.payerName?.trim() ?? "";
+  const byName = payer ? candidates.filter((o) => o.buyerName && nameTallies(o.buyerName, payer)) : [];
 
-  if (candidates.length === 1) return settle(seller.id, base, candidates[0].id);
+  // Exactly one order at this amount whose buyer matches the sender: that's the one.
+  if (byName.length === 1) return settle(seller.id, base, byName[0].id);
 
-  if (candidates.length > 1) {
+  // One order at this amount: take it, unless the seller named a different buyer. People often pay from a
+  // sibling's or friend's account, so a name mismatch is held for the seller to confirm, never guessed or lost.
+  if (candidates.length === 1) {
+    const only = candidates[0];
+    const conflict = !!(payer && only.buyerName && !nameTallies(only.buyerName, payer));
+    if (!conflict) return settle(seller.id, base, only.id);
+  }
+
+  // Several fit, or the name disagrees: hold for the seller to pick.
+  if (candidates.length >= 1) {
     const c = await db.credit.create({ data: { ...base, sellerId: seller.id, state: "HELD" } });
     emitToSeller(seller.id, { type: "credit.held", creditId: c.id, amountKobo: ev.amountKobo, candidateOrderIds: candidates.map((o) => o.id) });
     return { status: "held", creditId: c.id, candidateOrderIds: candidates.map((o) => o.id), replay: false };

@@ -206,3 +206,15 @@ html:has(.ld) { scroll-behavior: smooth; }
   .ld-mobile-dots span { width: 22px; height: 4px; border-radius: 4px; background: var(--line); transition: background-color 200ms ease; }
   .ld-mobile-dots span.on { background: var(--green); }
 }
+
+/* FAQ: native disclosure, one question per row. */
+.ld-faq { padding: 72px var(--pad); max-width: 820px; margin: 0 auto; }
+.ld-faq-list { margin-top: 28px; border-top: 1px solid var(--line); }
+.ld-faq-item { border-bottom: 1px solid var(--line); }
+.ld-faq-item summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; cursor: pointer; list-style: none; font-weight: 700; font-size: 1.05rem; line-height: 1.35; }
+.ld-faq-item summary::-webkit-details-marker { display: none; }
+.ld-faq-chev { flex: none; color: var(--muted); transition: transform 200ms var(--ease-out); }
+.ld-faq-item[open] .ld-faq-chev { transform: rotate(180deg); color: var(--green); }
+.ld-faq-item p { padding: 0 0 20px; color: var(--muted); line-height: 1.6; max-width: 65ch; }
+@media (hover: hover) and (pointer: fine) { .ld-faq-item summary:hover { color: var(--green); } }
+@media (prefers-reduced-motion: reduce) { .ld-faq-chev { transition: none; } }

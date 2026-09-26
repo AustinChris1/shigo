@@ -61,6 +61,24 @@ const r2 = await sim({ accountRef: acct, amountKobo: 100000, externalId: id });
 check("first delivery matched", r1.result?.status === "matched" && r1.result.orderId === d.id);
 check("replay flagged, not double-applied", r2.result?.replay === true && (await db.ledgerEntry.count({ where: { orderId: d.id } })) === 1);
 
+// Buyer names: two orders at the same amount are told apart by the sender name on the credit.
+const chidi = await db.order.create({ data: { sellerId: seller.id, amountKobo: 1800000, reference: "SG-NM01", buyerName: "Chidi Okafor", note: "frontal" } });
+const tunde = await db.order.create({ data: { sellerId: seller.id, amountKobo: 1800000, reference: "SG-NM02", buyerName: "Tunde Bakare", note: "closure" } });
+r = await sim({ accountRef: acct, amountKobo: 1800000, payerName: "OKAFOR CHIDI EMEKA" });
+check("same amount, sender name picks Chidi's order", r.result?.status === "matched" && r.result.orderId === chidi.id, JSON.stringify(r.result));
+check("Tunde's order still open", (await db.order.findUnique({ where: { id: tunde.id } })).state === "PENDING");
+
+// Named buyer, different sender: held for the seller, never guessed (people pay from a sibling's account).
+const named = await db.order.create({ data: { sellerId: seller.id, amountKobo: 990000, reference: "SG-NM03", buyerName: "Ngozi Eze" } });
+r = await sim({ accountRef: acct, amountKobo: 990000, payerName: "ADEWALE JOHNSON" });
+check("named buyer, other sender -> held", r.result?.status === "held", JSON.stringify(r.result));
+check("named order not auto-greened", (await db.order.findUnique({ where: { id: named.id } })).state === "PENDING");
+
+// No buyer named: the only order at that amount takes it, whoever sent it.
+const anyone = await db.order.create({ data: { sellerId: seller.id, amountKobo: 330000, reference: "SG-NM04" } });
+r = await sim({ accountRef: acct, amountKobo: 330000, payerName: "ANY SENDER" });
+check("no buyer named, single order -> matched", r.result?.status === "matched" && r.result.orderId === anyone.id, JSON.stringify(r.result));
+
 // Unknown account -> stored, not attributed
 r = await sim({ accountRef: "9999999999", amountKobo: 5000 });
 check("unknown account stored as unknown_account", r.result?.status === "unknown_account", JSON.stringify(r.result));

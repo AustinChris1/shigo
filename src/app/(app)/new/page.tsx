@@ -18,8 +18,13 @@ export default async function NewOrder() {
           <input className="input text-2xl font-bold" id="amount" name="amount" inputMode="decimal" placeholder="4500" autoFocus required />
         </div>
         <div>
-          <label className="label" htmlFor="note">What is it for (optional)</label>
-          <input className="input" id="note" name="note" placeholder="2 wigs, Ada" maxLength={60} />
+          <label className="label" htmlFor="buyerName">Who is paying (optional)</label>
+          <input className="input" id="buyerName" name="buyerName" placeholder="Chidi Okafor" autoComplete="off" maxLength={60} />
+          <p className="mt-1 text-xs text-(--muted)">Their name as on their bank account, if you know it. It helps Shigo tell buyers apart when two pay the same amount.</p>
+        </div>
+        <div>
+          <label className="label" htmlFor="note">What they are buying (optional)</label>
+          <input className="input" id="note" name="note" placeholder="12-inch frontal" maxLength={60} />
         </div>
         <button className="btn btn-primary w-full" type="submit">Create order</button>
       </form>
