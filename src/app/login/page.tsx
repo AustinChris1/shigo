@@ -34,7 +34,6 @@ export default async function Login() {
 
           <LoginForm />
           <p className="lg-fine">We text a one-time code to your phone to sign you in.</p>
-          <p className="lg-fine"><Link className="underline underline-offset-2" href="/photo-credits">Photo credits</Link></p>
         </div>
       </section>
     </main>

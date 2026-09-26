@@ -16,14 +16,14 @@ Deadline: InnovateX 2026 regional selection (dates unpublished), then the finale
 - [x] Bank verification: the account is resolved with the bank and the name must tally, checked again on the server at sign-in (needs a real `PAYSTACK_SECRET_KEY`; off until then)
 - [x] Toasts for sign-in, sign-out, orders, payments, held money and reports; dismissible "Install Shigo" prompt (Android install button, iPhone steps), PNG app icons, service worker
 - [x] Sign-in by one-time SMS code (Termii, "dnd" route) with a signed session cookie; demo mode shows the code on screen until `TERMII_API_KEY` and `TERMII_BASE_URL` are set
-- [x] Live at https://useshigo.vercel.app; photo credits on their own page (/photo-credits)
+- [x] Live at https://useshigo.vercel.app
 - [x] Smooth scroll on the landing page (Lenis, synced with the scroll animations; off for reduced motion)
 - [x] Tests: `node scripts/e2e-local.mjs` (matcher rules), `node scripts/bank-picker-check.mjs` (bank search), `node scripts/name-match-check.mts` (bank name rule), `node scripts/signin-check.mjs` and `node scripts/toast-check.mjs` (sign-in and toasts), `node scripts/screenshots.mjs` and `node scripts/landing-shots.mjs` (visual review)
 
 ## This week (blockers, need a human)
 
 - [ ] Register the team at innovatex.africa under Track A; all four members 18 to 25 with school ID and a Blaze account
-- [ ] Email Ecobank developer support: sandbox credentials; does the Notification webhook fire on a personal Blaze account; is there a per-customer virtual account product
+- [ ] Email Ecobank sandbox support with the questions the docs leave open (see `docs/ecobank-api-notes.md`)
 - [ ] Ask Ecobank or YouthCred whether six months of verified inflows on a Blaze account affects a corps member's eligibility or limit; keep the written answer
 - [x] Neon Postgres connected locally and on Vercel (tables created)
 - [ ] Paystack account (a real secret key turns on bank-name verification at sign-in); put `PAYSTACK_SECRET_KEY` in Vercel env; register `https://useshigo.vercel.app/api/webhooks/paystack`; pay a test virtual account so a real callback lands

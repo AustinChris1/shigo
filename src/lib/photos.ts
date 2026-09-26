@@ -1,5 +1,4 @@
-// Landing photography: free-licence Unsplash photos of Nigerian sellers, buyers and markets, credited in the footer.
-// Swap any entry for the team's own photo of a real seller; keep the credit shape.
+// Landing photography: Unsplash photos (free licence, no attribution required); photographer kept for our own records.
 export type Photo = { id: string; alt: string; by: string; user: string; place?: string; w: number; h: number };
 
 const u = (id: string, w: number) => `https://images.unsplash.com/photo-${id}?w=${w}&q=75&auto=format&fit=crop`;
@@ -19,6 +18,3 @@ export const photos = {
 } satisfies Record<string, Photo>;
 
 export const src = (p: Photo, w = 1200) => u(p.id, w);
-// Credit only what a page shows, one line per photographer.
-export const creditsFor = (used: Photo[]) => used.filter((p, i, a) => a.findIndex((q) => q.user === p.user) === i);
-export const landingPhotos: Photo[] = [photos.excited, photos.showing, photos.headscarf, photos.hand, photos.fruit, photos.tomatoes, photos.bananas, photos.striped, photos.corps, photos.market];
