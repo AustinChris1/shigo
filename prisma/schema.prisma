@@ -103,3 +103,12 @@ model OtpCode {
 
   @@index([phone, createdAt])
 }
+
+// Recent bank-name lookups, shared by every server instance so one sign-in spends one lookup.
+model BankLookup {
+  key       String   @id // "<bankCode>:<accountNumber>"
+  found     Boolean
+  name      String?
+  message   String?
+  createdAt DateTime @default(now())
+}

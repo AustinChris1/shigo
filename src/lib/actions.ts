@@ -94,7 +94,7 @@ async function verifyCode(prev: LoginState, formData: FormData): Promise<LoginSt
   };
   const seller = await db.seller.upsert({ where: { phone }, create: { phone, ...data }, update: data });
   await setSession(seller.id);
-  await flash("success", `Welcome, ${p.name.split(" ")[0]}`, p.verified ? "Your account is verified with your bank." : "You're signed in. Bank verification turns on once a Paystack key is set.");
+  await flash("success", `Welcome, ${p.name.split(" ")[0]}`, p.verified ? "Your account is verified with your bank." : "You're signed in. We couldn't check your account with the bank this time, so it shows as not verified.");
   redirect("/app");
 }
 

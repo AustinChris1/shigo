@@ -1,11 +1,13 @@
 // Name-matching rule for bank verification; run: node scripts/name-match-check.mts
-import { nameTallies } from "../src/lib/bank.ts";
+import { nameTallies } from "../src/lib/names.ts";
 
 const cases: [string, string, boolean][] = [
   ["Ada Obi", "OBI ADAEZE CHIOMA", true],
   ["Adaeze Obi", "OBI ADAEZE CHIOMA", true],
   ["Chioma", "OBI ADAEZE CHIOMA", true],
   ["obi  adaeze", "OBI, ADAEZE C.", true],
+  ["Austin-Chris Chukwudi Iwu", "IWU AUSTIN CHRIS CHUKWUDI", true],
+  ["Chris Iwu", "IWU AUSTIN CHRIS CHUKWUDI", true],
   ["Tunde Bakare", "OBI ADAEZE CHIOMA", false],
   ["Ada Bakare", "OBI ADAEZE CHIOMA", false],
   ["Emeka", "OBI ADAEZE CHIOMA", false],

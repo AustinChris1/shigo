@@ -61,7 +61,12 @@ Bank-name checks: Ecobank accounts use Ecobank's Validate Account Name once Ecob
 
 ## Tests
 
-Run against a local server (`npm run build && npm start`):
+Run against a local server with the bank check switched off, so tests don't spend Paystack lookups (test keys allow 3 real lookups a day):
+
+```bash
+npm run build && PAYSTACK_SECRET_KEY=sk_test_dummy npm start
+```
+
 
 | Script | Checks |
 | --- | --- |
