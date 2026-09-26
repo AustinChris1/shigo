@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { naira } from "@/lib/money";
 import { Mark } from "./Mark";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 // The single-order screen the seller holds up at the counter. Amber until the bank confirms; then green.
 export function OrderLive(props: {
@@ -15,6 +17,7 @@ export function OrderLive(props: {
   payer: string | null;
   rail: string | null;
 }) {
+  const router = useRouter();
   const [state, setState] = useState(props.initialState);
   const [paidAt, setPaidAt] = useState(props.paidAt);
   const [flash, setFlash] = useState(false);
@@ -32,6 +35,8 @@ export function OrderLive(props: {
           setState("PAID");
           setPaidAt(me.paidAt);
           setFlash(true);
+        toast.success(`${naira(props.amountKobo)} has entered`, { id: `paid-${props.orderId}`, description: "Confirmed by the bank. Hand over the goods." });
+        router.refresh();
           if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
         }
       } catch {
@@ -39,7 +44,7 @@ export function OrderLive(props: {
       }
     }, 2000);
     return () => clearInterval(id);
-  }, [props.orderId, state]);
+  }, [props.orderId, props.amountKobo, state, router]);
 
   useEffect(() => {
     if (state !== "PENDING") return;
@@ -50,12 +55,14 @@ export function OrderLive(props: {
         setState("PAID");
         setPaidAt(ev.paidAt);
         setFlash(true);
+        toast.success(`${naira(props.amountKobo)} has entered`, { id: `paid-${props.orderId}`, description: "Confirmed by the bank. Hand over the goods." });
+        router.refresh();
         if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
         es.close();
       }
     };
     return () => es.close();
-  }, [props.orderId, state]);
+  }, [props.orderId, props.amountKobo, state, router]);
 
   const paid = state === "PAID";
   return (

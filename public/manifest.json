@@ -2,11 +2,36 @@
   "name": "Shigo",
   "short_name": "Shigo",
   "description": "The seller's screen turns green only when the bank says so.",
-  "start_url": "/",
+  "start_url": "/app",
   "display": "standalone",
-  "background_color": "#fafaf7",
+  "background_color": "#ffffff",
   "theme_color": "#14783c",
   "icons": [
-    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
-  ]
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "scope": "/",
+  "id": "/app"
 }

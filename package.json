@@ -21,6 +21,7 @@
     "prisma": "^6.19.3",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "sonner": "^2.0.8",
     "zod": "^4.6.5"
   },
   "devDependencies": {

@@ -15,6 +15,8 @@ model Seller {
   bankName       String?
   bankCode       String? // NIP bank code from the picker (src/lib/banks.json)
   accountNumber  String?
+  accountName    String? // the name on the account, as the bank returned it
+  verifiedAt     DateTime? // set when the bank confirmed the account and the name tallied
   // How the rail names this receiving account in webhook payloads (Paystack DVA number, Ecobank account number).
   railAccountRef String?       @unique
   createdAt      DateTime      @default(now())

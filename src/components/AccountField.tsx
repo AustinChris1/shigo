@@ -1,17 +1,19 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { Check, ChevronDown, Search } from "lucide-react";
+import { BadgeCheck, Check, ChevronDown, Search } from "lucide-react";
 import banks from "@/lib/banks.json";
 
-type Result = { key: string; kind: "found"; name: string } | { key: string; kind: "notfound" } | { key: string; kind: "unavailable" };
+type Result = { key: string; kind: "found"; name: string; tallies: boolean | null } | { key: string; kind: "notfound" } | { key: string; kind: "unavailable" };
 type Bank = { name: string; code: string; slug: string };
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
 // Searchable bank picker (type to filter, arrows to move, Enter to pick) plus the account number,
 // which resolves to the account holder's name when a Paystack key is configured server-side.
-export function AccountField({ defaultBankCode = "050", defaultAccount = "" }: { defaultBankCode?: string; defaultAccount?: string }) {
+export type AccountStatus = "idle" | "checking" | "found" | "mismatch" | "notfound" | "unavailable";
+
+export function AccountField({ defaultBankCode = "050", defaultAccount = "", personName = "", onStatus }: { defaultBankCode?: string; defaultAccount?: string; personName?: string; onStatus?: (s: AccountStatus) => void }) {
   const list = banks as Bank[];
   const [bank, setBank] = useState<Bank>(() => list.find((b) => b.code === defaultBankCode) ?? list[0]);
   const [query, setQuery] = useState("");
@@ -48,7 +50,8 @@ export function AccountField({ defaultBankCode = "050", defaultAccount = "" }: {
   };
 
   const valid = /^\d{10}$/.test(account);
-  const key = `${bank.code}:${account}`;
+  const nameKey = personName.trim().toLowerCase();
+  const key = `${bank.code}:${account}:${nameKey}`;
   const status = !valid ? "idle" : result?.key === key ? result.kind : "checking";
 
   useEffect(() => {
@@ -56,18 +59,21 @@ export function AccountField({ defaultBankCode = "050", defaultAccount = "" }: {
     let cancelled = false;
     const t = setTimeout(async () => {
       try {
-        const r = await fetch(`/api/bank/resolve?account=${account}&bank=${encodeURIComponent(bank.code)}`, { cache: "no-store" });
+        const r = await fetch(`/api/bank/resolve?account=${account}&bank=${encodeURIComponent(bank.code)}&name=${encodeURIComponent(personName.trim())}`, { cache: "no-store" });
         const d = await r.json();
         if (cancelled) return;
         if (d.unavailable) setResult({ key, kind: "unavailable" });
-        else if (d.found) setResult({ key, kind: "found", name: d.name });
+        else if (d.found) setResult({ key, kind: "found", name: d.name, tallies: d.tallies });
         else setResult({ key, kind: "notfound" });
       } catch {
         if (!cancelled) setResult({ key, kind: "unavailable" });
       }
     }, 350);
     return () => { cancelled = true; clearTimeout(t); };
-  }, [account, bank.code, key, valid]);
+  }, [account, bank.code, key, valid, personName]);
+
+  const shown: AccountStatus = status === "found" && result?.kind === "found" && result.tallies === false ? "mismatch" : (status as AccountStatus);
+  useEffect(() => { onStatus?.(shown); }, [shown, onStatus]);
 
   return (
     <>
@@ -130,7 +136,8 @@ export function AccountField({ defaultBankCode = "050", defaultAccount = "" }: {
         />
         <p id="account-help" className="mt-1 text-xs" aria-live="polite">
           {status === "checking" && <span className="text-(--muted)">Checking the name on this account…</span>}
-          {status === "found" && result?.kind === "found" && <span className="font-semibold text-(--green)">{result.name}</span>}
+          {shown === "found" && result?.kind === "found" && <span className="acct-ok"><BadgeCheck size={14} aria-hidden="true" /> {result.name}{result.tallies ? " · matches your name" : ""}</span>}
+          {shown === "mismatch" && result?.kind === "found" && <span className="acct-bad">This account is in the name <b>{result.name}</b>. Enter your name as it appears on the account.</span>}
           {status === "notfound" && <span className="text-(--red)">No account found with that number at this bank.</span>}
           {status === "unavailable" && <span className="text-(--muted)">Name check is off on this build. The bank must send notifications for this account.</span>}
           {status === "idle" && <span className="text-(--muted)">The account the bank sends Shigo notifications for.</span>}

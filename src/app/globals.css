@@ -152,3 +152,10 @@ html[data-theme="dark"] .app-hero { background: radial-gradient(120% 90% at 100%
 .app-nav-item.is-active .app-nav-icon { background: var(--green-bg); }
 .app-nav-item.is-primary .app-nav-icon { width: 52px; height: 52px; margin-top: -26px; border-radius: 18px; background: var(--green); color: var(--bg); box-shadow: 0 10px 24px -10px rgba(20, 120, 60, .7); }
 .app-nav-item.is-primary { color: var(--ink); }
+.acct-ok { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; color: var(--green); }
+.acct-bad { color: var(--red); }
+html[data-theme="dark"] .acct-bad { color: #f08a7e; }
+.form-error { padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--red) 10%, transparent); color: var(--red); font-size: .9rem; }
+html[data-theme="dark"] .form-error { color: #f08a7e; }
+.btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+.app-hero-verify { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; font-size: .75rem; font-weight: 600; color: rgba(255,255,255,.9); }

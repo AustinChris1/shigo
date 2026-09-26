@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { naira } from "@/lib/money";
 import { Mark } from "./Mark";
+import { toast } from "sonner";
 
 export type OrderRow = {
   id: string;
@@ -47,6 +49,7 @@ function chime() {
 }
 
 export function LiveOrders({ initial }: { initial: OrderRow[] }) {
+  const router = useRouter();
   const [orders, setOrders] = useState(initial);
   const [justPaid, setJustPaid] = useState<Set<string>>(new Set());
   const [notice, setNotice] = useState<string | null>(null);
@@ -65,6 +68,7 @@ export function LiveOrders({ initial }: { initial: OrderRow[] }) {
             setJustPaid((s) => { const next = new Set(s); newlyPaid.forEach((o) => next.add(o.id)); return next; });
             chime();
             if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
+            for (const o of newlyPaid) toast.success("Payment has entered", { id: `paid-${o.id}`, description: "Confirmed by the bank. Hand over the goods." });
           }
           return prev.map((p) => { const n = data.orders.find((o) => o.id === p.id); return n ? { ...p, state: n.state, paidAt: n.paidAt } : p; });
         });
@@ -89,14 +93,17 @@ export function LiveOrders({ initial }: { initial: OrderRow[] }) {
         setJustPaid((s) => new Set(s).add(ev.orderId));
         chime();
         if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
+        toast.success(`${naira(ev.amountKobo)} has entered`, { id: `paid-${ev.orderId}`, description: `Order ${ev.reference} is confirmed by the bank. Hand over the goods.` });
       } else if (ev.type === "credit.held") {
         setNotice(`${naira(ev.amountKobo)} came in and fits ${ev.candidateOrderIds.length} orders. Pick which one.`);
+        toast.warning(`${naira(ev.amountKobo)} needs you`, { id: `held-${ev.creditId}`, description: "It fits more than one order. Pick which one.", action: { label: "Open", onClick: () => router.push("/credits") } });
       } else if (ev.type === "credit.unmatched") {
         setNotice(`${naira(ev.amountKobo)} came in with no matching order. Assign it.`);
+        toast.warning(`${naira(ev.amountKobo)} came in`, { id: `unmatched-${ev.creditId}`, description: "No order matches it. Assign it to one.", action: { label: "Open", onClick: () => router.push("/credits") } });
       }
     };
     return () => es.close();
-  }, []);
+  }, [router]);
 
   const open = orders.filter((o) => o.state === "PENDING");
   const done = orders.filter((o) => o.state !== "PENDING");

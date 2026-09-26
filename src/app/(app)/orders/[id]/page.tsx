@@ -5,14 +5,14 @@ import { currentSeller } from "@/lib/session";
 import { naira } from "@/lib/money";
 import { cancelOrderAction } from "@/lib/actions";
 import { OrderLive } from "@/components/OrderLive";
+import { ShareButton } from "@/components/ShareButton";
 
 export const dynamic = "force-dynamic";
 
-export default async function OrderPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ reported?: string }> }) {
+export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
   const seller = await currentSeller();
   if (!seller) redirect("/login");
   const { id } = await params;
-  const { reported } = await searchParams;
   const order = await db.order.findFirst({ where: { id, sellerId: seller.id }, include: { credit: true } });
   if (!order) notFound();
 
@@ -41,8 +41,6 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
         rail={order.credit?.rail ?? null}
       />
 
-      {reported && <p className="card border-(--green) bg-(--green-bg) p-3 text-sm">Report saved. Send it to your bank from the ledger page.</p>}
-
       {order.state === "PENDING" && (
         <>
           <section className="card space-y-3 p-4">
@@ -53,7 +51,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
               Narration: <span className="font-mono font-bold">{order.reference}</span>
               <span className="block text-xs text-(--muted)">Optional. If the buyer forgets it, exact amount still matches when this is your only open order at that amount.</span>
             </div>
-            <a href={wa} target="_blank" rel="noreferrer" className="btn btn-green w-full">Send details on WhatsApp</a>
+            <ShareButton href={wa} />
           </section>
 
           <div className="flex gap-2">

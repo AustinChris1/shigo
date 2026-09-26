@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogOut, Plus } from "lucide-react";
+import { BadgeCheck, LogOut, Plus } from "lucide-react";
 import { db } from "@/lib/db";
 import { currentSeller } from "@/lib/session";
 import { LiveOrders } from "@/components/LiveOrders";
@@ -51,6 +51,7 @@ export default async function Home() {
           <div>
             <p className="app-hero-hi">Hi {first}</p>
             <p className="app-hero-acct">{seller.bankName ?? "Bank"} · {seller.accountNumber ?? "no account yet"}</p>
+            <p className="app-hero-verify">{seller.verifiedAt ? <><BadgeCheck size={14} aria-hidden="true" /> Verified with your bank{seller.accountName ? ` · ${seller.accountName}` : ""}</> : "Account not verified yet"}</p>
           </div>
           <Mark size={40} state="entered" className="app-hero-mark" />
         </div>
