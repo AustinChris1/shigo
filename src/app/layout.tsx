@@ -16,7 +16,11 @@ export const viewport: Viewport = { themeColor: "#14783c", width: "device-width"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={display.variable}>
+    <html lang="en" className={display.variable} suppressHydrationWarning>
+      <head>
+        {/* Applies a saved theme before first paint so dark mode never flashes white. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem("shigo-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}` }} />
+      </head>
       <body className="min-h-dvh">{children}</body>
     </html>
   );

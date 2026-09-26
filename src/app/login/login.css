@@ -1,0 +1,22 @@
+/* Sign-in: the seller on one side, the form on the other; on phones the photo is a banner. */
+.lg { min-height: 100svh; display: grid; grid-template-rows: 220px 1fr; }
+.lg-photo { position: relative; overflow: hidden; }
+.lg-photo-img { object-fit: cover; }
+.lg-photo-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 15, 13, .1), rgba(10, 15, 13, .75)); }
+.lg-photo-copy { position: absolute; left: 20px; right: 20px; bottom: 18px; color: #fff; display: grid; gap: 8px; }
+.lg-live { display: inline-flex; align-items: center; gap: 8px; width: fit-content; padding: 6px 10px; border-radius: 10px; background: rgba(255, 255, 255, .92); color: #0e1311; font-weight: 800; font-size: .9rem; }
+.lg-photo-line { font-size: clamp(1.3rem, 4.5vw, 2.2rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; text-wrap: balance; max-width: 18ch; }
+.lg-form { display: grid; grid-template-rows: auto 1fr; }
+.lg-form-top { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; }
+.lg-back { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; font-weight: 600; color: var(--muted); }
+.lg-form-body { max-width: 440px; width: 100%; margin: 0 auto; padding: 8px 20px 40px; }
+.lg-intro { margin-top: 8px; color: var(--muted); }
+.lg-card { margin-top: 20px; padding: 18px; display: grid; gap: 16px; }
+.lg-fine { margin-top: 14px; font-size: .78rem; color: var(--muted); text-align: center; }
+
+@media (min-width: 900px) {
+  .lg { grid-template-rows: none; grid-template-columns: 1fr 1fr; }
+  .lg-photo { min-height: 100svh; }
+  .lg-photo-copy { left: 40px; right: 40px; bottom: 40px; gap: 14px; }
+  .lg-form-body { padding: 24px 40px 56px; align-self: center; }
+}

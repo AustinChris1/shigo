@@ -5,6 +5,7 @@ import { currentSeller } from "@/lib/session";
 import { LiveOrders } from "@/components/LiveOrders";
 import { logoutAction } from "@/lib/actions";
 import { Wordmark } from "@/components/Mark";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -30,9 +31,12 @@ export default async function Home() {
           <h1><Wordmark size={30} /></h1>
           <p className="text-sm text-(--muted)">{seller.name} · {seller.bankName ?? "bank"} {seller.accountNumber ?? ""}</p>
         </div>
-        <form action={logoutAction}>
-          <button className="text-xs text-(--muted) underline">Sign out</button>
-        </form>
+        <div className="flex items-center gap-2">
+          <ThemeToggle className="icon-btn" />
+          <form action={logoutAction}>
+            <button className="text-xs text-(--muted) underline">Sign out</button>
+          </form>
+        </div>
       </header>
 
       <Link href="/new" className="btn btn-primary w-full">

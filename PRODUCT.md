@@ -37,6 +37,8 @@ Selling happens in WhatsApp chats and at hostel doors; the phone is the till. Th
 
 ## Brand Commitments
 
+Visual world pinned by the user on 26 Sep 2026: pure white ground with a true dark mode, image-rich pages with real photographs of Nigerian sellers (free-licence Unsplash, credited, to be replaced by the team's own photos), icons, and scroll animation on the landing page; all pages including sign-in share the world. No slider or video until real footage exists.
+
 Name: Shigo. Mark: the account is a box with a slot; the coin sits outside, amber, until the bank confirms, then drops inside and turns green (src/components/Mark.tsx, public/icon.svg). Wordmark set in Bricolage Grotesque. Copy is plain and short, no em dashes. Ecobank reference confirmed 26 Sep 2026: "Built for Ecobank Blaze accounts" and "an InnovateX 2026 entry", never implying endorsement or partnership. Nothing on the page or in the repo mentions the tooling used to build it.
 
 ## Evidence on Hand

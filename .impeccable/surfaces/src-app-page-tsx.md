@@ -2,23 +2,25 @@
 version: 1
 slug: "src-app-page-tsx"
 primary_target: "src/app/page.tsx"
-related_targets: ["src/components/Landing.tsx"]
+related_targets: ["src/components/Landing.tsx","src/app/login/page.tsx"]
 ---
 
 # Landing page (src/app/page.tsx)
 
-Scope: the public route `/` for Shigo. Mode: Persuade. Visitor: InnovateX 2026 judges and Ecobank staff scanning a QR at regional selection or the finale; secondary, student sellers. Job: understand the mechanic in seconds, believe it is real, open the app. Proof allowed: Punch 2025 (52%, 27%, 15%, 71%), Sahara Reporters 20 Sep 2026 (Slipcraft, 61,000, 650 points), TechCabal/The Garage 16 Mar 2026 (two-thirds earn, 53% WhatsApp), each with a source link. Ecobank reference: "Built for Ecobank Blaze accounts", "an InnovateX 2026 entry", no endorsement implied. Constraints: no pilot claims, no users or volumes, no em dashes, no mention of build tooling. Signed-in sellers skip the page: `/` redirects them to `/app`.
+Scope: the public route `/` for Shigo, and the sign-in at `/login` which shares its world. Mode: Persuade. Visitor: InnovateX 2026 judges and Ecobank staff scanning a QR; secondary, student sellers. Job: understand the mechanic in seconds, believe it is real, open the app. Proof allowed: Punch 2025 (52%, 27%, 15%), Sahara Reporters 20 Sep 2026 (Slipcraft, 61,000, 650 points), TechCabal/The Garage 16 Mar 2026 (two-thirds earn, 53% WhatsApp), each with a source link. Ecobank reference: "Built for Ecobank Blaze accounts", "an InnovateX 2026 entry", no endorsement implied. Constraints: no pilot claims, no users or volumes, no em dashes, no mention of build tooling. Signed-in sellers skip the page: `/` redirects them to `/app`.
+
+User-pinned world (26 Sep 2026, replacing the rejected Engraved Naira direction): pure white ground with a true dark mode; an image-rich hero; icons; scroll animation that earns attention; every page in the same world, including sign-in. No slider and no video until real footage exists.
 
 ## Direction contract
 
-THESIS: The page is printed like the money it protects, and the proof appears only when the bank holds it to the light. It refuses the fintech landing: headline left, phone mock right, three feature cards, a stats row.
+THESIS: The people it is for, photographed for real, with the one mechanic looping on them. It refuses the engraved-ornament page it replaces and the carousel hero.
 
-OWN-WORLD: Note-green field (#0b3d2e ground, #1f7a4d light), bone note-paper (#efe9d8), engraved ink (#2a2420), coin amber (#c8892a), confirmed green (#2fbf71 on the dark field). Guilloche drawn as SVG geometry, never a raster texture. One security thread: an unbroken vertical line running the page as the order's timeline. The medallion (the Shigo mark) is the only seal and recurs on every plate. Display: Bricolage Grotesque; tabular numerals for serials, dates and amounts. Elevation by engraved rule, never shadow.
+OWN-WORLD: White ground (#ffffff) and near-black dark ground (#0b0f0d) from the app's own tokens; ink, muted grey, hairline borders; state green (#14783c light, #3fbf6f dark) and amber (#b7791f, #e0a63a). Photography: free-licence Unsplash photos of Nigerian sellers, buyers, markets and a corps member, credited in the footer, swappable for the team's own. Icons from lucide in one stroke. Display: Bricolage Grotesque. Radii 12 to 24px; the only shadow is under the phone.
 
-STORY: A judge sees a buyer's screenshot fail to change the screen, sees the bank's callback change it, and sees the confirmed payment become a dated row. They believe the bank is the only witness and tap Open Shigo.
+STORY: A judge sees real sellers, sees the phone stay amber while a receipt is shown, sees the bank line arrive and the phone turn green, sees the rows that become a record, and taps Open Shigo.
 
-FIRST VIEWPORT: Full-bleed note-green engraved field. The medallion centred, about 40% of the viewport height, coin amber above the slot, charged empty field around it. Under it one line, "Shigo. It has entered.", one supporting line, "Your screen turns green only when the bank says so." One primary action, Open Shigo, anchored at the bottom on mobile, beside the copy on desktop. The signature interaction loops: the watermark SHIGO surfaces behind the medallion, the coin drops in and turns green, the state word snaps from Not yet to Shigo, never tweens, holds, resets.
+FIRST VIEWPORT: Sticky white header with wordmark, section links, theme toggle and Open Shigo. Left: "It has entered." with "entered" in green, a two-sentence lede, Open Shigo and See it work, the Blaze line. Right: a five-photo mosaic with subtle scroll parallax; on the first photo a live badge loops the mechanic (coin above slot, amber Not yet; coin drops; green Shigo). Mobile: copy first, mosaic as a two-column grid beneath.
 
-FORM: Engraved Naira, position 7 of 7 on the grounded list, seed key cc345c63, code-led. Raises: one idea per plate (Bass); all outcomes present, one struck, values snap (cathode); one unbroken line as the spine (drum machine); dated rows with serial-like stamps (pickling); active emptiness in the first viewport (ikebana); one seal, never a new icon per section (coffeehouse).
+FORM: Photo-led product landing, user-pinned; no seed roll (brief-pinned beats the roll). Signature interaction: the sticky phone in How it works changes state as three steps scroll past it: receipt toast, bank credit toast, green card with the coin drop. Motion grammar: one loop on the hero badge, one sticky scene, clip reveals staggered 80 to 90ms, count-ups on the three figures, a marquee of what sellers sell, parallax on the mosaic; all off under reduced motion.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
