@@ -33,8 +33,8 @@ export default async function Login() {
           <p className="lg-intro">Sign in to collect a payment. It takes a minute.</p>
 
           <LoginForm />
-          <p className="lg-fine">Demo build. Sign-in is by phone number only; OTP comes before public use.</p>
-          <p className="lg-fine">Photo by <a className="underline underline-offset-2" href={`https://unsplash.com/@${photos.stall.user}`} target="_blank" rel="noreferrer">{photos.stall.by}</a>, free to use under the Unsplash licence.</p>
+          <p className="lg-fine">We text a one-time code to your phone to sign you in.</p>
+          <p className="lg-fine"><Link className="underline underline-offset-2" href="/photo-credits">Photo credits</Link></p>
         </div>
       </section>
     </main>

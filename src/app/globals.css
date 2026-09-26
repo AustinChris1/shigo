@@ -159,3 +159,7 @@ html[data-theme="dark"] .acct-bad { color: #f08a7e; }
 html[data-theme="dark"] .form-error { color: #f08a7e; }
 .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
 .app-hero-verify { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; font-size: .75rem; font-weight: 600; color: rgba(255,255,255,.9); }
+.otp-head { display: flex; gap: 12px; align-items: flex-start; }
+.otp-icon { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 12px; background: var(--green-bg); color: var(--green); }
+.otp-demo { padding: 10px 12px; border-radius: 12px; background: var(--amber-bg); color: var(--amber); font-size: .88rem; }
+.otp-input { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 1.6rem; letter-spacing: .5em; text-align: center; }

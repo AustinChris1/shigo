@@ -90,3 +90,16 @@ model Report {
   createdAt    DateTime  @default(now())
   sentToBankAt DateTime?
 }
+
+// One-time sign-in code. Only a hash is stored; the pending sign-in details ride along until the code is confirmed.
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  codeHash  String
+  payload   String
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([phone, createdAt])
+}

@@ -15,6 +15,8 @@ Deadline: InnovateX 2026 regional selection (dates unpublished), then the finale
 - [x] Postgres via Prisma; Vercel project linked to GitHub (`main` deploys production); deployment protection off
 - [x] Bank verification: the account is resolved with the bank and the name must tally, checked again on the server at sign-in (needs a real `PAYSTACK_SECRET_KEY`; off until then)
 - [x] Toasts for sign-in, sign-out, orders, payments, held money and reports; dismissible "Install Shigo" prompt (Android install button, iPhone steps), PNG app icons, service worker
+- [x] Sign-in by one-time SMS code (Termii, "dnd" route) with a signed session cookie; demo mode shows the code on screen until `TERMII_API_KEY` and `TERMII_BASE_URL` are set
+- [x] Live at https://useshigo.vercel.app; photo credits on their own page (/photo-credits)
 - [x] Smooth scroll on the landing page (Lenis, synced with the scroll animations; off for reduced motion)
 - [x] Tests: `node scripts/e2e-local.mjs` (matcher rules), `node scripts/bank-picker-check.mjs` (bank search), `node scripts/name-match-check.mts` (bank name rule), `node scripts/signin-check.mjs` and `node scripts/toast-check.mjs` (sign-in and toasts), `node scripts/screenshots.mjs` and `node scripts/landing-shots.mjs` (visual review)
 
@@ -24,19 +26,19 @@ Deadline: InnovateX 2026 regional selection (dates unpublished), then the finale
 - [ ] Email Ecobank developer support: sandbox credentials; does the Notification webhook fire on a personal Blaze account; is there a per-customer virtual account product
 - [ ] Ask Ecobank or YouthCred whether six months of verified inflows on a Blaze account affects a corps member's eligibility or limit; keep the written answer
 - [x] Neon Postgres connected locally and on Vercel (tables created)
-- [ ] Paystack account (a real secret key turns on bank-name verification at sign-in); put `PAYSTACK_SECRET_KEY` in Vercel env; register `https://shigo-austinchris-projects.vercel.app/api/webhooks/paystack`; pay a test virtual account so a real callback lands
+- [ ] Paystack account (a real secret key turns on bank-name verification at sign-in); put `PAYSTACK_SECRET_KEY` in Vercel env; register `https://useshigo.vercel.app/api/webhooks/paystack`; pay a test virtual account so a real callback lands
 
 ## Next in the code
 
-- [ ] Ecobank adapter: replace field guesses in `src/lib/rails/ecobank.ts` once a real sandbox payload is seen; note the source in the file
-- [ ] OTP sign-in before any pilot seller uses it (`src/lib/session.ts` is demo-grade)
-- [ ] Replace the Unsplash photos in `src/lib/photos.ts` with photos of real sellers (keep the credit shape)
-- [ ] Record a 20 s screen capture of the green moment and drop it into the sticky phone slot on the landing page
-- [ ] Turn `ALLOW_SIMULATED_CREDITS` off on any deployment shown as a real rail
+- [ ] Ecobank adapter (blocked on the sandbox reply): replace field guesses in `src/lib/rails/ecobank.ts` once a real sandbox payload is seen; note the source in the file
+- [ ] Termii account: set `TERMII_API_KEY`, `TERMII_BASE_URL` (from the dashboard) and a registered `TERMII_SENDER_ID` in `.env` and Vercel so codes arrive by SMS
+
+## Later (not needed for the finale)
+
 - [ ] Postgres migrations instead of `prisma db push` at build (`scripts/db-sync.mjs`)
-- [ ] Redis or a single-server host if SSE must be instant in production (Vercel uses the 2 s poll)
+- [ ] Redis or a single-server host if the green screen must be instant rather than within 2 s on Vercel
 - [ ] Offline shell in the service worker (install already works)
-- [ ] Move from npm to pnpm (team preference): delete `package-lock.json`, `pnpm import`, allow Prisma's build scripts in `pnpm-workspace.yaml`, commit `pnpm-lock.yaml`; Vercel picks pnpm from the lockfile
+- [ ] Move from npm to pnpm (team preference)
 
 ## Pilot (week 4)
 

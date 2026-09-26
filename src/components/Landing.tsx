@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight, BadgeCheck, ExternalLink, FileText, Landmark, PauseCircle, Smartphone, Wallet } from "lucide-react";
 import { Mark } from "./Mark";
 import { ThemeToggle } from "./ThemeToggle";
-import { photos, src, creditsFor, landingPhotos, type Photo } from "@/lib/photos";
+import { photos, src, type Photo } from "@/lib/photos";
 import "@/app/landing.css";
 
 const STEPS = [
@@ -283,11 +283,7 @@ export function Landing() {
           <span className="ld-brand"><Mark size={18} state="entered" /><span className="font-display">Shigo</span></span>
           <span>Shigo is Hausa for “enter”. Built for Ecobank Blaze accounts. An InnovateX 2026 entry.</span>
         </div>
-        <p className="ld-credits">
-          Photos, free to use under the Unsplash licence: {creditsFor(landingPhotos).map((c, i) => (
-            <span key={c.user}>{i > 0 ? ", " : ""}<a href={`https://unsplash.com/@${c.user}`} target="_blank" rel="noreferrer">{c.by}</a></span>
-          ))}.
-        </p>
+        <p className="ld-credits"><Link href="/photo-credits">Photo credits</Link></p>
         <p className="ld-credits">Rails: Ecobank Notification Service, Paystack test mode. A simulated or test credit is always labelled.</p>
       </footer>
     </div>

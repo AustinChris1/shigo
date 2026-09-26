@@ -10,6 +10,8 @@ import { emitToSeller } from "./events";
 import { cookies } from "next/headers";
 import banks from "./banks.json";
 import { resolveAccount, nameTallies } from "./bank";
+import { sendOtpSms } from "./sms";
+import { createHash, randomInt } from "crypto";
 
 
 // A one-shot message the next page shows as a toast (read and cleared by FlashToast).
@@ -18,9 +20,22 @@ async function flash(type: "success" | "error" | "info", title: string, descript
   jar.set("shigo_flash", JSON.stringify({ type, title, description }), { path: "/", maxAge: 30, sameSite: "lax" });
 }
 
-export type LoginState = { error?: string; accountName?: string };
+export type LoginState = { step?: "code"; phone?: string; demoCode?: string; error?: string; accountName?: string; resent?: number };
 
-export async function loginAction(_prev: LoginState, formData: FormData): Promise<LoginState> {
+type Pending = { phone: string; name: string; bankCode: string; bankName: string; accountNumber: string; accountName: string | null; verified: boolean };
+
+const CODE_TTL_MS = 10 * 60 * 1000;
+const MAX_CODES_PER_HOUR = 5;
+const MAX_ATTEMPTS = 5;
+const hashCode = (phone: string, code: string) => createHash("sha256").update(`${phone}:${code}:${process.env.SESSION_SECRET ?? "dev"}`).digest("hex");
+
+// Step 1: check the details and the bank account, then send a one-time code. Nothing is saved as a seller yet.
+// Step 2: the code must match; only then is the seller saved and signed in.
+export async function loginAction(prev: LoginState, formData: FormData): Promise<LoginState> {
+  return String(formData.get("step")) === "code" ? verifyCode(prev, formData) : startSignIn(formData);
+}
+
+async function startSignIn(formData: FormData): Promise<LoginState> {
   const phone = String(formData.get("phone") ?? "").replace(/\s+/g, "");
   const name = String(formData.get("name") ?? "").trim();
   const bankCode = String(formData.get("bankCode") ?? "").trim();
@@ -37,22 +52,49 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
   if (r.status === "found" && !nameTallies(name, r.name)) {
     return { error: `This account is in the name ${r.name}. Enter your name as it appears on the account.`, accountName: r.name };
   }
-  const verified = r.status === "found";
-
-  const data = {
-    name,
-    bankName,
-    bankCode,
-    accountNumber,
-    railAccountRef: accountNumber,
-    accountName: verified ? r.name : null,
-    verifiedAt: verified ? new Date() : null,
-  };
   const existing = await db.seller.findUnique({ where: { railAccountRef: accountNumber } });
   if (existing && existing.phone !== phone) return { error: "This account is already linked to another phone number." };
+
+  const recent = await db.otpCode.count({ where: { phone, createdAt: { gte: new Date(Date.now() - 3600_000) } } });
+  if (recent >= MAX_CODES_PER_HOUR) return { error: "Too many codes requested for this number. Try again in an hour." };
+
+  const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
+  const pending: Pending = { phone, name, bankCode, bankName, accountNumber, accountName: r.status === "found" ? r.name : null, verified: r.status === "found" };
+  await db.otpCode.create({ data: { phone, codeHash: hashCode(phone, code), payload: JSON.stringify(pending), expiresAt: new Date(Date.now() + CODE_TTL_MS) } });
+
+  const sent = await sendOtpSms(phone, code);
+  if (!sent.sent && !sent.demo) return { error: `We could not text your code: ${sent.error}. Try again.` };
+  return { step: "code", phone, demoCode: sent.sent ? undefined : code, resent: Date.now() };
+}
+
+async function verifyCode(prev: LoginState, formData: FormData): Promise<LoginState> {
+  const phone = String(formData.get("phone") ?? "");
+  const code = String(formData.get("code") ?? "").replace(/\D/g, "");
+  const back = { step: "code" as const, phone, demoCode: prev.demoCode, resent: prev.resent };
+  if (code.length !== 6) return { ...back, error: "Enter the 6-digit code." };
+
+  const otp = await db.otpCode.findFirst({ where: { phone }, orderBy: { createdAt: "desc" } });
+  if (!otp || otp.expiresAt < new Date()) return { ...back, error: "That code has expired. Go back and request a new one." };
+  if (otp.attempts >= MAX_ATTEMPTS) return { ...back, error: "Too many wrong tries. Go back and request a new code." };
+  if (otp.codeHash !== hashCode(phone, code)) {
+    await db.otpCode.update({ where: { id: otp.id }, data: { attempts: { increment: 1 } } });
+    return { ...back, error: `That code is not right. ${MAX_ATTEMPTS - otp.attempts - 1} tries left.` };
+  }
+
+  const p = JSON.parse(otp.payload) as Pending;
+  await db.otpCode.deleteMany({ where: { phone } });
+  const data = {
+    name: p.name,
+    bankName: p.bankName,
+    bankCode: p.bankCode,
+    accountNumber: p.accountNumber,
+    railAccountRef: p.accountNumber,
+    accountName: p.accountName,
+    verifiedAt: p.verified ? new Date() : null,
+  };
   const seller = await db.seller.upsert({ where: { phone }, create: { phone, ...data }, update: data });
   await setSession(seller.id);
-  await flash("success", `Welcome, ${name.split(" ")[0]}`, verified ? "Your account is verified with your bank." : "You're signed in. Bank verification turns on once a Paystack key is set.");
+  await flash("success", `Welcome, ${p.name.split(" ")[0]}`, p.verified ? "Your account is verified with your bank." : "You're signed in. Bank verification turns on once a Paystack key is set.");
   redirect("/app");
 }
 
