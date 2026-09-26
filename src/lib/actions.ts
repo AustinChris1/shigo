@@ -7,22 +7,25 @@ import { newReference, toKobo } from "./money";
 import { assignCredit } from "./match";
 import { requireSeller, setSession, clearSession } from "./session";
 import { emitToSeller } from "./events";
+import banks from "./banks.json";
 
 export async function loginAction(formData: FormData) {
   const phone = String(formData.get("phone") ?? "").replace(/\s+/g, "");
   const name = String(formData.get("name") ?? "").trim();
-  const bankName = String(formData.get("bankName") ?? "").trim() || null;
+  const bankCode = String(formData.get("bankCode") ?? "").trim() || null;
+  const bankName = bankCode ? (banks.find((b) => b.code === bankCode)?.name ?? null) : null;
   const accountNumber = String(formData.get("accountNumber") ?? "").replace(/\s+/g, "") || null;
   if (!/^0\d{10}$/.test(phone)) throw new Error("phone must be 11 digits, e.g. 08012345678");
   if (name.length < 2) throw new Error("enter your name");
+  if (accountNumber && !/^\d{10}$/.test(accountNumber)) throw new Error("account number must be 10 digits");
 
   const seller = await db.seller.upsert({
     where: { phone },
-    create: { phone, name, bankName, accountNumber, railAccountRef: accountNumber },
-    update: { name, bankName: bankName ?? undefined, accountNumber: accountNumber ?? undefined, railAccountRef: accountNumber ?? undefined },
+    create: { phone, name, bankName, bankCode, accountNumber, railAccountRef: accountNumber },
+    update: { name, bankName: bankName ?? undefined, bankCode: bankCode ?? undefined, accountNumber: accountNumber ?? undefined, railAccountRef: accountNumber ?? undefined },
   });
   await setSession(seller.id);
-  redirect("/");
+  redirect("/app");
 }
 
 export async function logoutAction() {
@@ -46,7 +49,7 @@ export async function createOrderAction(formData: FormData) {
   }
   if (!order) throw new Error("could not create order, try again");
   emitToSeller(seller.id, { type: "order.created", orderId: order.id });
-  revalidatePath("/");
+  revalidatePath("/app");
   redirect(`/orders/${order.id}`);
 }
 
@@ -54,16 +57,16 @@ export async function cancelOrderAction(formData: FormData) {
   const seller = await requireSeller();
   const id = String(formData.get("orderId"));
   await db.order.updateMany({ where: { id, sellerId: seller.id, state: "PENDING" }, data: { state: "CANCELLED" } });
-  revalidatePath("/");
-  redirect("/");
+  revalidatePath("/app");
+  redirect("/app");
 }
 
 export async function assignCreditAction(formData: FormData) {
   const seller = await requireSeller();
   await assignCredit(seller.id, String(formData.get("creditId")), String(formData.get("orderId")));
   revalidatePath("/credits");
-  revalidatePath("/");
-  redirect("/");
+  revalidatePath("/app");
+  redirect("/app");
 }
 
 export async function createReportAction(formData: FormData) {

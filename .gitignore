@@ -50,3 +50,9 @@ AGENTS.md
 screenshots/
 
 .vercel
+
+# design-tool transient state (surface briefs stay tracked)
+.impeccable/questions/
+.impeccable/review/
+.impeccable/build/
+.impeccable/mocks/

@@ -2,9 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 
-const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["800"], variable: "--font-display", display: "swap" });
-import { Nav } from "@/components/Nav";
-import { currentSeller } from "@/lib/session";
+const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["500", "800"], variable: "--font-display", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Shigo",
@@ -16,14 +14,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#14783c", width: "device-width", initialScale: 1, maximumScale: 1 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const seller = await currentSeller();
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={display.variable}>
-      <body className="min-h-dvh">
-        <div className="mx-auto max-w-md px-4 pb-24 pt-4">{children}</div>
-        {seller && <Nav />}
-      </body>
+      <body className="min-h-dvh">{children}</body>
     </html>
   );
 }

@@ -27,7 +27,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   return (
     <main className="space-y-5">
       <header>
-        <Link href="/" className="text-sm text-(--muted)">← Orders</Link>
+        <Link href="/app" className="text-sm text-(--muted)">← Orders</Link>
       </header>
 
       <OrderLive

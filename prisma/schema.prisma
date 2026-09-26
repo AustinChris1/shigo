@@ -13,6 +13,7 @@ model Seller {
   phone          String        @unique
   name           String
   bankName       String?
+  bankCode       String? // NIP bank code from the picker (src/lib/banks.json)
   accountNumber  String?
   // How the rail names this receiving account in webhook payloads (Paystack DVA number, Ecobank account number).
   railAccountRef String?       @unique

@@ -18,7 +18,7 @@ export default async function Credits() {
   return (
     <main className="space-y-5">
       <header>
-        <Link href="/" className="text-sm text-(--muted)">← Orders</Link>
+        <Link href="/app" className="text-sm text-(--muted)">← Orders</Link>
         <h1 className="mt-2 text-2xl font-bold tracking-tight">Unmatched money</h1>
         <p className="text-sm text-(--muted)">Payments the bank confirmed that fit more than one order, or none. Pick the order each one belongs to.</p>
       </header>

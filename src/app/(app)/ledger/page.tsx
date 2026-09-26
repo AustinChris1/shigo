@@ -31,7 +31,7 @@ export default async function Ledger() {
   return (
     <main className="space-y-5">
       <header>
-        <Link href="/" className="text-sm text-(--muted)">← Orders</Link>
+        <Link href="/app" className="text-sm text-(--muted)">← Orders</Link>
         <h1 className="mt-2 text-2xl font-bold tracking-tight">Ledger</h1>
         <p className="text-sm text-(--muted)">Confirmed payments only. This is your income record.</p>
       </header>
