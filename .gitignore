@@ -48,3 +48,5 @@ prisma/dev.db*
 CLAUDE.md
 AGENTS.md
 screenshots/
+
+.vercel

@@ -13,9 +13,21 @@ Built for InnovateX 2026 (Ecobank / Blaze), Track A: Inclusive Finance. See `Shi
 ```bash
 npm install
 cp .env.example .env        # ALLOW_SIMULATED_CREDITS=1 is already set for local testing
-npx prisma db push          # creates prisma/dev.db
+docker run -d --name shigo-pg -e POSTGRES_PASSWORD=shigo -p 5433:5432 postgres:16
+npx prisma db push          # creates the tables
 npm run dev                 # http://localhost:3000
 ```
+
+Or skip Docker and point `DATABASE_URL` at the Neon database Vercel created: `vercel env pull .env`.
+
+## Deploy on Vercel
+
+The project is linked to Vercel and deploys from `main`. Two things make it work on serverless:
+
+- Postgres (Neon) instead of a file database. Add it once in the Vercel dashboard: Storage, Create Database, Neon. That sets `DATABASE_URL` on the project; the build runs `prisma db push` against it.
+- The phone polls `/api/orders/status` every 2 seconds as well as listening on SSE. On a single Node server (Railway, Render, `next start`) SSE fires instantly; on Vercel the poll carries the green moment, at most 2 seconds late.
+
+Set `PAYSTACK_SECRET_KEY` and `ALLOW_SIMULATED_CREDITS` in the Vercel project's environment variables. Keep the simulator off on any deployment you show as a real rail.
 
 Sign in at `/login` with any 11-digit phone number and the account number buyers pay into. That account number is what the rail's webhook must carry as the receiving account.
 

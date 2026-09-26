@@ -19,6 +19,28 @@ export function OrderLive(props: {
   const [paidAt, setPaidAt] = useState(props.paidAt);
   const [flash, setFlash] = useState(false);
 
+  // Polling fallback for serverless hosts; SSE below is the fast path on a single Node server.
+  useEffect(() => {
+    if (state !== "PENDING") return;
+    const id = setInterval(async () => {
+      try {
+        const r = await fetch("/api/orders/status", { cache: "no-store" });
+        if (!r.ok) return;
+        const data: { orders: { id: string; state: string; paidAt: string | null }[] } = await r.json();
+        const me = data.orders.find((o) => o.id === props.orderId);
+        if (me?.state === "PAID") {
+          setState("PAID");
+          setPaidAt(me.paidAt);
+          setFlash(true);
+          if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
+        }
+      } catch {
+        /* offline; next tick */
+      }
+    }, 2000);
+    return () => clearInterval(id);
+  }, [props.orderId, state]);
+
   useEffect(() => {
     if (state !== "PENDING") return;
     const es = new EventSource("/api/events");

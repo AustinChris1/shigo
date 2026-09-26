@@ -51,6 +51,32 @@ export function LiveOrders({ initial }: { initial: OrderRow[] }) {
   const [justPaid, setJustPaid] = useState<Set<string>>(new Set());
   const [notice, setNotice] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
+  // Polling fallback: on serverless hosts the SSE bus cannot reach this instance, so the phone also asks every 2s.
+  useEffect(() => {
+    let stop = false;
+    const tick = async () => {
+      try {
+        const r = await fetch("/api/orders/status", { cache: "no-store" });
+        if (!r.ok || stop) return;
+        const data: { orders: { id: string; state: string; paidAt: string | null }[]; pendingCredits: number } = await r.json();
+        setOrders((prev) => {
+          const newlyPaid = data.orders.filter((n) => n.state === "PAID" && prev.some((p) => p.id === n.id && p.state === "PENDING"));
+          if (newlyPaid.length) {
+            setJustPaid((s) => { const next = new Set(s); newlyPaid.forEach((o) => next.add(o.id)); return next; });
+            chime();
+            if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
+          }
+          return prev.map((p) => { const n = data.orders.find((o) => o.id === p.id); return n ? { ...p, state: n.state, paidAt: n.paidAt } : p; });
+        });
+        if (data.pendingCredits > 0) setNotice((cur) => cur ?? "Money came in that needs you to pick an order.");
+      } catch {
+        /* offline; try again next tick */
+      }
+    };
+    const id = setInterval(tick, 2000);
+    return () => { stop = true; clearInterval(id); };
+  }, []);
+
   // Mounts fresh on every navigation (page is force-dynamic), so initial never needs syncing.
   useEffect(() => {
     const es = new EventSource("/api/events");
