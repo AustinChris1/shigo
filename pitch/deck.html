@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shigo pitch deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=DM+Sans:opsz,wght@9..40,400..700&display=swap" rel="stylesheet">
+<!--
+  Shigo pitch deck, InnovateX 2026. Open in a browser.
+  Keys: right/left or space to move, N for speaker notes, F for full screen, Home/End.
+  PDF: print the page (landscape, no margins), or run: node scripts/pitch-pdf.mjs
+  Each <section> is one 1920x1080 slide; its <aside> holds the speaker notes.
+-->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #050706; overflow: hidden; }
+  section { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0; }
+  section:not(.on) { display: none !important; }
+  section h1, section h2, section h3, section p, section ul, section table { margin: 0; }
+  section ul { padding-left: 1.2em; }
+  section img, section svg { display: block; flex: none; }
+  section aside { display: none; }
+  #notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 40vh; overflow: auto; padding: 16px 24px; background: rgba(5,7,6,.94); color: #e8ece9; font: 18px/1.5 "DM Sans", sans-serif; display: none; }
+  #notes.on { display: block; }
+  #count { position: fixed; right: 16px; top: 12px; color: #6b746f; font: 14px "DM Sans", sans-serif; }
+  @media print {
+    @page { size: 1920px 1080px; margin: 0; }
+    html, body { height: auto; overflow: visible; background: none; }
+    section, section:not(.on) { position: relative; display: flex !important; transform: none !important; break-after: page; }
+    #notes, #count { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<section id="cover" data-transition="fade" style="background:#0E1311; color:#FBFBF8; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:center">
+<div style="display:flex; gap:64px; align-items:center">
+<div style="width:760px; display:flex; flex-direction:column; gap:40px">
+<div style="display:flex; align-items:center; gap:28px">
+<svg aria-label="Shigo mark: a coin inside an account box" width="140" height="140" viewBox="0 0 64 64" fill="none"><path d="M20 24 H17 A9 9 0 0 0 8 33 V49 A9 9 0 0 0 17 58 H47 A9 9 0 0 0 56 49 V33 A9 9 0 0 0 47 24 H44" stroke="#FBFBF8" stroke-width="6" stroke-linecap="round"/><path d="M20 24 H44" stroke="#FBFBF8" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="41" r="9" fill="#5BCB86"/></svg>
+<h1 style="font-family:'Bricolage Grotesque', sans-serif; font-size:144px; font-weight:800; line-height:1; letter-spacing:-4px">Shigo</h1>
+</div>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.05; letter-spacing:-1px">No more fake alerts. <span style="color:#5BCB86">Just real money.</span></h2>
+<p style="font-size:28px; line-height:1.4; color:#A7B0AB">Bank-confirmed sales and an income record for Nigerian student sellers.</p>
+</div>
+<img src="img/landing.jpg" alt="The Shigo landing page" style="width:840px; height:525px; object-fit:cover; border-radius:16px; border:1px solid #2A322E">
+</div>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#A7B0AB">InnovateX 2026 · Track A, Inclusive Finance · [Team name], FUTO · useshigo.vercel.app</p>
+<aside>Good [morning]. We are [team name] from FUTO, and this is Shigo. Shigo is Hausa for "enter", as in "the money has entered". It is a mobile web app for student sellers. An order turns green only when the seller's own bank confirms the money, and every confirmed sale becomes a line in an income record they can take to a lender.</aside>
+</section>
+<section id="moment" data-transition="fade" style="background:#FBFBF8; color:#141A17; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+<p style="font-size:28px; font-weight:700; color:#14783C">The moment</p>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.1; letter-spacing:-1px; width:1500px">At the counter, the seller checks the buyer's screen, not her own account.</h2>
+<p style="font-size:40px; line-height:1.3; color:#5F6A65; width:1400px">A real alert can take minutes to land. A fake receipt takes seconds to make. Either way, the goods leave with the buyer.</p>
+<div style="display:flex; gap:32px">
+<div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#FFF4DC; padding:40px; border-radius:16px">
+<h3 style="font-size:40px; font-weight:700; color:#8A5A12">What she sees</h3>
+<p style="font-size:28px; line-height:1.35">A screenshot on the buyer's phone. Anyone can make one.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#E3F2E8; padding:40px; border-radius:16px">
+<h3 style="font-size:40px; font-weight:700; color:#14783C">What she needs</h3>
+<p style="font-size:28px; line-height:1.35">Her own bank saying the money has landed. Nobody can fake that.</p>
+</div>
+</div>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#5F6A65">Shigo · InnovateX 2026</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#5F6A65; text-align:right">2</p>
+<aside>Picture a student selling wigs or food from her hostel. A buyer comes to collect and holds up his phone: "Transfer successful." Her own bank alert has not come yet. Alerts can be slow, the buyer is in a hurry, and asking him to wait feels rude. So she trusts his screen and hands over the goods. That one moment is where sellers lose money. The problem is not payment. It is proof.</aside>
+</section>
+<section id="crime" data-transition="fade" style="background:#0E1311; color:#FBFBF8; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:center; gap:40px">
+<p style="font-size:28px; font-weight:700; color:#F0B45C">The crime</p>
+<h1 style="font-family:'Bricolage Grotesque', sans-serif; font-size:144px; font-weight:800; line-height:1; letter-spacing:-3px; color:#F0B45C">61,000+</h1>
+<p style="font-size:40px; line-height:1.3; width:1400px">people in the Telegram group of Slipcraft, a site that prints fake OPay, Kuda and PalmPay receipts for 650 points each.</p>
+<p style="font-size:28px; line-height:1.4; color:#A7B0AB; width:1400px">Kuda confirmed the receipts impersonate its app. Faking a transfer is now a product.</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#A7B0AB">Source: Sahara Reporters investigation, 20 Sep 2026</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#A7B0AB; text-align:right">3</p>
+<aside>This is not a few bad people with photo editors. Eight days ago Sahara Reporters published an investigation into Slipcraft, a website that generates fake OPay, Kuda and PalmPay receipts. Its Telegram group has over 61,000 members. Each receipt costs 650 points on the site. Kuda confirmed its brand is being impersonated. A fake receipt is now cheap, fast and sold as a service.</aside>
+</section>
+<section id="damage" data-transition="fade" style="background:#F0F2ED; color:#141A17; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+<p style="font-size:28px; font-weight:700; color:#8A5A12">The damage</p>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.1; letter-spacing:-1px; width:1500px">Fake alerts are pushing traders back to cash.</h2>
+<div style="display:flex; gap:32px; flex:1; align-items:flex-end">
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; border-top:4px solid #8A5A12; padding-top:24px">
+<p style="font-family:'Bricolage Grotesque', sans-serif; font-size:144px; font-weight:800; line-height:1; color:#8A5A12">52%</p>
+<p style="font-size:28px; line-height:1.35">had been shown a fake alert</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; border-top:4px solid #8A5A12; padding-top:24px">
+<p style="font-family:'Bricolage Grotesque', sans-serif; font-size:144px; font-weight:800; line-height:1; color:#8A5A12">27%</p>
+<p style="font-size:28px; line-height:1.35">lost money to one</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; border-top:4px solid #8A5A12; padding-top:24px">
+<p style="font-family:'Bricolage Grotesque', sans-serif; font-size:144px; font-weight:800; line-height:1; color:#8A5A12">15%</p>
+<p style="font-size:28px; line-height:1.35">stopped taking transfers</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; border-top:4px solid #8A5A12; padding-top:24px">
+<p style="font-family:'Bricolage Grotesque', sans-serif; font-size:144px; font-weight:800; line-height:1; color:#8A5A12">71%</p>
+<p style="font-size:28px; line-height:1.35">now prefer cash</p>
+</div>
+</div>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#5F6A65">Source: Punch survey of 330 Lagos traders, 15 Feb 2025</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#5F6A65; text-align:right">4</p>
+<aside>Punch surveyed 330 Lagos traders in February 2025. More than half had been shown a fake alert. More than a quarter lost money to one. 15% stopped accepting transfers altogether, and 71% now prefer cash. For inclusive finance, that last number is the one that hurts: fraud is pushing people out of digital payments and back to cash, where there is no record at all.</aside>
+</section>
+<section id="seller" data-transition="fade" style="background:#FBFBF8; color:#141A17; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+<p style="font-size:28px; font-weight:700; color:#14783C">The seller</p>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.1; letter-spacing:-1px; width:1500px">Students already run businesses on WhatsApp.</h2>
+<div style="display:flex; gap:32px">
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; border-top:4px solid #14783C; padding-top:24px">
+<p style="font-family:'Bricolage Grotesque', sans-serif; font-size:144px; font-weight:800; line-height:1; color:#14783C">2 in 3</p>
+<p style="font-size:28px; line-height:1.35">Nigerian students earn while in school</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; border-top:4px solid #14783C; padding-top:24px">
+<p style="font-family:'Bricolage Grotesque', sans-serif; font-size:144px; font-weight:800; line-height:1; color:#14783C">53%</p>
+<p style="font-size:28px; line-height:1.35">of student businesses sell mainly on WhatsApp</p>
+</div>
+</div>
+<p style="font-size:40px; line-height:1.3; color:#5F6A65; width:1400px">Every sale is a transfer, often from a stranger, and the seller carries the risk.</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#5F6A65">Source: The Garage study of 4,000+ students at 55 institutions, via TechCabal, 16 Mar 2026</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#5F6A65; text-align:right">5</p>
+<aside>Our user is the student seller. A study by The Garage of more than 4,000 students across 55 institutions found two in three Nigerian students earn while in school, and 53% of student businesses sell mainly on WhatsApp. That means orders come in by chat, payment comes by transfer, and handover happens in a hostel corridor. There is no POS and no till. They are the people fake alerts hit hardest.</aside>
+</section>
+<section id="how" data-transition="fade" style="background:#FBFBF8; color:#141A17; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+<p style="font-size:28px; font-weight:700; color:#14783C">How it works</p>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.1; letter-spacing:-1px">One screen the buyer cannot touch.</h2>
+<div style="display:flex; gap:48px; align-items:flex-start">
+<div style="width:580px; display:flex; flex-direction:column; gap:40px">
+<div style="display:flex; gap:24px; align-items:flex-start">
+<p style="width:56px; height:56px; border-radius:28px; background:#14783C; color:#FBFBF8; font-size:28px; font-weight:700; text-align:center; line-height:56px">1</p>
+<div style="width:500px; display:flex; flex-direction:column; gap:8px">
+<h3 style="font-size:40px; font-weight:700; line-height:1.1">Seller makes the order</h3>
+<p style="font-size:28px; line-height:1.35; color:#5F6A65">Amount, and the buyer's name if known. It shows amber: Not yet.</p>
+</div>
+</div>
+<div style="display:flex; gap:24px; align-items:flex-start">
+<p style="width:56px; height:56px; border-radius:28px; background:#14783C; color:#FBFBF8; font-size:28px; font-weight:700; text-align:center; line-height:56px">2</p>
+<div style="width:500px; display:flex; flex-direction:column; gap:8px">
+<h3 style="font-size:40px; font-weight:700; line-height:1.1">Buyer pays as normal</h3>
+<p style="font-size:28px; line-height:1.35; color:#5F6A65">Transfer from any bank or USSD. No code to type.</p>
+</div>
+</div>
+<div style="display:flex; gap:24px; align-items:flex-start">
+<p style="width:56px; height:56px; border-radius:28px; background:#14783C; color:#FBFBF8; font-size:28px; font-weight:700; text-align:center; line-height:56px">3</p>
+<div style="width:500px; display:flex; flex-direction:column; gap:8px">
+<h3 style="font-size:40px; font-weight:700; line-height:1.1">The bank tells Shigo</h3>
+<p style="font-size:28px; line-height:1.35; color:#5F6A65">The seller's bank confirms the credit. The screen turns green.</p>
+</div>
+</div>
+</div>
+<div style="display:flex; gap:32px">
+<div style="display:flex; flex-direction:column; gap:12px">
+<img src="img/order-waiting.png" alt="Order screen waiting: amber coin outside the box, Not yet" style="width:500px; height:410px; object-fit:contain">
+<p style="font-size:24px; color:#5F6A65">Waiting for the bank</p>
+</div>
+<div style="display:flex; flex-direction:column; gap:12px">
+<img src="img/order-paid.png" alt="Order screen paid: green coin inside the box, It has entered" style="width:500px; height:410px; object-fit:contain">
+<p style="font-size:24px; color:#5F6A65">After the credit (test payment shown)</p>
+</div>
+</div>
+</div>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#5F6A65">Screens from useshigo.vercel.app</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#5F6A65; text-align:right">6</p>
+<aside>Shigo never looks at the buyer. The seller makes an order, sends her account details on WhatsApp, and keeps the screen open. The buyer pays the normal way, from any bank. When the money lands, the seller's bank sends Shigo a signed message, Shigo matches it to the order, and the coin drops into the box and turns green. A screenshot changes what is on the buyer's phone. It cannot make the seller's bank send that message.</aside>
+</section>
+<section id="demo" data-transition="fade" style="background:#14783C; color:#FBFBF8; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:center; gap:40px">
+<p style="font-size:28px; font-weight:700">Live demo</p>
+<h1 style="font-family:'Bricolage Grotesque', sans-serif; font-size:144px; font-weight:800; line-height:1; letter-spacing:-3px; width:1100px">Watch it turn green.</h1>
+<p style="font-size:40px; line-height:1.3; width:1100px">On stage, a test payment stands in for Ecobank's notification. It is labelled as a test on screen and never counted as income.</p>
+<svg aria-label="Shigo mark: the coin inside the box" width="360" height="360" viewBox="0 0 64 64" fill="none" style="position:absolute; right:128px; top:360px; width:360px; height:360px"><path d="M20 24 H17 A9 9 0 0 0 8 33 V49 A9 9 0 0 0 17 58 H47 A9 9 0 0 0 56 49 V33 A9 9 0 0 0 47 24 H44" stroke="#FBFBF8" stroke-width="6" stroke-linecap="round"/><path d="M20 24 H44" stroke="#FBFBF8" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="41" r="9" fill="#FBFBF8"/></svg>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px">useshigo.vercel.app</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; text-align:right">7</p>
+<aside>Switch to the phone. 1. Sign in: pick the bank, type the account number, the name on the account appears. 2. New order: 18,000 naira, buyer Chidi Okafor, 12-inch frontal. It shows amber, Not yet. 3. Hold up a fake "transfer successful" screenshot next to it: nothing changes. 4. Tap Send test payment. Say clearly: this test payment stands in for Ecobank's Notification Service, which we are waiting on sandbox access for. 5. It turns green with a chime: "Shigo. It has entered." 6. Open the ledger: the test is shown as not counted. If the network fails, use the screenshots on the previous slide.</aside>
+</section>
+<section id="never-guess" data-transition="fade" style="background:#FBFBF8; color:#141A17; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+<p style="font-size:28px; font-weight:700; color:#14783C">Matching</p>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.1; letter-spacing:-1px">It never guesses with money.</h2>
+<table style="width:1664px; font-size:28px; border-collapse:collapse">
+<tr><th style="text-align:left; padding:16px 0; border-bottom:2px solid #141A17; width:960px">When the bank says money landed</th><th style="text-align:left; padding:16px 0; border-bottom:2px solid #141A17">Shigo</th></tr>
+<tr><td style="padding:16px 0; border-bottom:1px solid #DDE1DC">One open order at that amount</td><td style="padding:16px 0; border-bottom:1px solid #DDE1DC; color:#14783C; font-weight:700">Turns it green</td></tr>
+<tr><td style="padding:16px 0; border-bottom:1px solid #DDE1DC">Two orders at that amount, sender's name fits one</td><td style="padding:16px 0; border-bottom:1px solid #DDE1DC; color:#14783C; font-weight:700">Greens that buyer's order</td></tr>
+<tr><td style="padding:16px 0; border-bottom:1px solid #DDE1DC">Sender's name is not the buyer the seller named</td><td style="padding:16px 0; border-bottom:1px solid #DDE1DC; color:#8A5A12; font-weight:700">Holds it; the seller decides</td></tr>
+<tr><td style="padding:16px 0; border-bottom:1px solid #DDE1DC">Two orders still fit</td><td style="padding:16px 0; border-bottom:1px solid #DDE1DC; color:#8A5A12; font-weight:700">Holds it; the seller picks</td></tr>
+<tr><td style="padding:16px 0; border-bottom:1px solid #DDE1DC">No order fits</td><td style="padding:16px 0; border-bottom:1px solid #DDE1DC; color:#8A5A12; font-weight:700">Keeps it under Unmatched</td></tr>
+<tr><td style="padding:16px 0; border-bottom:1px solid #DDE1DC">The same bank message arrives twice</td><td style="padding:16px 0; border-bottom:1px solid #DDE1DC; font-weight:700">Counts it once</td></tr>
+</table>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#5F6A65">Every rule is covered by an automated end-to-end test</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#5F6A65; text-align:right">8</p>
+<aside>Buyers never type a reference code; we tried that and it was stressful. Shigo matches on the amount, and uses the sender's name on the credit to tell buyers apart. The key rule: if there is any doubt, Shigo never turns an order green. It holds the money and asks the seller. A real payment is never lost: anything that fits no order waits under Unmatched for the seller to assign. And the same bank message counted twice can never double a sale.</aside>
+</section>
+<section id="record" data-transition="fade" style="background:#F0F2ED; color:#141A17; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+<p style="font-size:28px; font-weight:700; color:#14783C">The record</p>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.1; letter-spacing:-1px; width:1500px">Every green sale becomes income history.</h2>
+<div style="display:flex; gap:64px; align-items:flex-start">
+<div style="width:640px; display:flex; flex-direction:column; gap:24px">
+<p style="font-size:40px; line-height:1.3">Each row is confirmed by the bank, not typed by the seller.</p>
+<p style="font-size:28px; line-height:1.4; color:#5F6A65">One tap exports a one-page record for a loan application. Test payments are never counted. The record is the seller's to share; the lender decides.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FFFFFF; padding:40px; border-radius:16px; border:1px solid #DDE1DC">
+<table style="width:880px; font-size:28px; border-collapse:collapse">
+<tr><th style="text-align:left; padding:12px 0; border-bottom:2px solid #141A17">Date</th><th style="text-align:left; padding:12px 0; border-bottom:2px solid #141A17">From</th><th style="text-align:left; padding:12px 0; border-bottom:2px solid #141A17">Item</th><th style="text-align:right; padding:12px 0; border-bottom:2px solid #141A17">Amount</th></tr>
+<tr><td style="padding:12px 0; border-bottom:1px solid #DDE1DC">3 Oct</td><td style="padding:12px 0; border-bottom:1px solid #DDE1DC">CHIDI OKAFOR</td><td style="padding:12px 0; border-bottom:1px solid #DDE1DC">12-inch frontal</td><td style="text-align:right; padding:12px 0; border-bottom:1px solid #DDE1DC">₦18,000</td></tr>
+<tr><td style="padding:12px 0; border-bottom:1px solid #DDE1DC">4 Oct</td><td style="padding:12px 0; border-bottom:1px solid #DDE1DC">AMAKA EZE</td><td style="padding:12px 0; border-bottom:1px solid #DDE1DC">Lace closure</td><td style="text-align:right; padding:12px 0; border-bottom:1px solid #DDE1DC">₦25,000</td></tr>
+<tr><td style="padding:12px 0; border-bottom:1px solid #DDE1DC">4 Oct</td><td style="padding:12px 0; border-bottom:1px solid #DDE1DC">TUNDE BELLO</td><td style="padding:12px 0; border-bottom:1px solid #DDE1DC">Wig revamp</td><td style="text-align:right; padding:12px 0; border-bottom:1px solid #DDE1DC">₦7,500</td></tr>
+</table>
+<p style="font-size:24px; color:#5F6A65">Example rows, not real sales</p>
+</div>
+</div>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#5F6A65">Shigo · InnovateX 2026</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#5F6A65; text-align:right">9</p>
+<aside>This is the inclusive finance part. Student sellers have income, but no evidence of it that a lender trusts: cash leaves no trace and a screenshot proves nothing. Every green order in Shigo is a dated row confirmed by the bank. After six months, a seller who becomes a corps member can export that record with one tap. We are careful here: Shigo does not score anyone or promise a loan. The record belongs to the seller, and the lender decides. These rows are an example, not pilot data.</aside>
+</section>
+<section id="why-ecobank" data-transition="fade" style="background:#FBFBF8; color:#141A17; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+<p style="font-size:28px; font-weight:700; color:#14783C">Why Ecobank</p>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.1; letter-spacing:-1px; width:1500px">Built on Ecobank's own APIs, for Blaze accounts.</h2>
+<div style="display:flex; gap:32px">
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FFFFFF; padding:40px; border-radius:16px; border:1px solid #DDE1DC">
+<h3 style="font-size:40px; font-weight:700; line-height:1.1">Notification Service</h3>
+<p style="font-size:28px; line-height:1.4; color:#5F6A65">The bank's own credit message is what turns an order green. Adapter built; field names wait on the sandbox payload.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FFFFFF; padding:40px; border-radius:16px; border:1px solid #DDE1DC">
+<h3 style="font-size:40px; font-weight:700; line-height:1.1">Validate Account Name</h3>
+<p style="font-size:28px; line-height:1.4; color:#5F6A65">Checks the seller's name against their account at sign-in. Client built; runs once credentials are issued.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FFFFFF; padding:40px; border-radius:16px; border:1px solid #DDE1DC">
+<h3 style="font-size:40px; font-weight:700; line-height:1.1">Blaze</h3>
+<p style="font-size:28px; line-height:1.4; color:#5F6A65">Ecobank's account for young people. Shigo gives student sellers a daily reason to take payments into it.</p>
+</div>
+</div>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#5F6A65">Built for Ecobank Blaze accounts. Not affiliated with Ecobank.</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#5F6A65; text-align:right">10</p>
+<aside>Shigo only works if the bank itself is the witness, which is why it belongs with Ecobank. The Notification Service sends a message when money lands; that message is the only thing that can turn an order green. Validate Account Name lets us check at sign-in that the seller owns the account. And Blaze is Ecobank's account for young people: every Shigo seller has a daily reason to get paid into Blaze, and every sale builds history on it.</aside>
+</section>
+<section id="status" data-transition="fade" style="background:#FBFBF8; color:#141A17; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+<p style="font-size:28px; font-weight:700; color:#14783C">Where it stands</p>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.1; letter-spacing:-1px">What works today, and what is waiting.</h2>
+<div style="display:flex; gap:32px">
+<div style="flex:3; display:flex; flex-direction:column; gap:20px; background:#E3F2E8; padding:40px; border-radius:16px">
+<h3 style="font-size:40px; font-weight:700; line-height:1.1; color:#14783C">Live at useshigo.vercel.app</h3>
+<ul style="font-size:28px; line-height:1.5">
+<li>Account-name check at sign-in, every Nigerian bank</li>
+<li>Sign-in by one-time code</li>
+<li>Matching by amount and buyer name; held money</li>
+<li>Green screen within about 2 seconds of the credit</li>
+<li>Income record export</li>
+<li>Installs on Android and iPhone</li>
+</ul>
+</div>
+<div style="flex:2; display:flex; flex-direction:column; gap:20px; background:#FFF4DC; padding:40px; border-radius:16px">
+<h3 style="font-size:40px; font-weight:700; line-height:1.1; color:#8A5A12">Waiting on</h3>
+<ul style="font-size:28px; line-height:1.5">
+<li>Ecobank sandbox access and the Notification payload (asked 27 Sep)</li>
+<li>SMS sender approval, so codes arrive by text</li>
+<li>Pilot with 10 sellers</li>
+</ul>
+</div>
+</div>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#5F6A65">Until Ecobank access arrives, account names are checked through Paystack</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#5F6A65; text-align:right">11</p>
+<aside>We want to be exact about what is real. Everything on the left is live on the public site today, and you can try it on your phone. Account names are checked through Paystack for every bank until our Ecobank credentials arrive. The sign-in code is shown on screen for now; SMS switches on once our sender ID is approved. What is waiting: we emailed Ecobank sandbox support on 27 September for Notification Service access. Until it arrives, the green screen in the demo is driven by a labelled test payment, never presented as a real Ecobank deposit.</aside>
+</section>
+<section id="next" data-transition="fade" style="background:#F0F2ED; color:#141A17; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+<p style="font-size:28px; font-weight:700; color:#14783C">Next</p>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.1; letter-spacing:-1px">Prove it with real sellers.</h2>
+<div style="display:flex; gap:32px">
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FFFFFF; padding:40px; border-radius:16px; border:1px solid #DDE1DC">
+<p style="font-size:28px; font-weight:700; color:#14783C">October</p>
+<h3 style="font-size:40px; font-weight:700; line-height:1.1">Campus pilot</h3>
+<p style="font-size:28px; line-height:1.4; color:#5F6A65">10 student sellers at FUTO use Shigo for every order for 7 days.</p>
+<p style="font-size:28px; line-height:1.4">[__] orders · [__] green · [__] held</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FFFFFF; padding:40px; border-radius:16px; border:1px solid #DDE1DC">
+<p style="font-size:28px; font-weight:700; color:#14783C">After the finale</p>
+<h3 style="font-size:40px; font-weight:700; line-height:1.1">Android companion</h3>
+<p style="font-size:28px; line-height:1.4; color:#5F6A65">For sellers paid into OPay or Moniepoint: reads the bank app's alert on the seller's own phone, never the buyer's.</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FFFFFF; padding:40px; border-radius:16px; border:1px solid #DDE1DC">
+<p style="font-size:28px; font-weight:700; color:#14783C">After the finale</p>
+<h3 style="font-size:40px; font-weight:700; line-height:1.1">Pidgin first</h3>
+<p style="font-size:28px; line-height:1.4; color:#5F6A65">The same plain screens in Pidgin, then Hausa, Igbo and Yoruba.</p>
+</div>
+</div>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#5F6A65">Shigo · InnovateX 2026</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#5F6A65; text-align:right">12</p>
+<aside>[Fill in after the pilot: how many orders, how many turned green, how many were held, and one thing a seller told you.] After the finale, two things widen who Shigo serves. Many sellers are paid into OPay or Moniepoint, so an Android companion will read the bank app's alert on the seller's own phone, never the buyer's. And the screens will speak Pidgin first, then Hausa, Igbo and Yoruba, for sellers who are not comfortable in English.</aside>
+</section>
+<section id="ask" data-transition="fade" style="background:#0E1311; color:#FBFBF8; font-family:'DM Sans', sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+<p style="font-size:28px; font-weight:700; color:#5BCB86">Our ask</p>
+<h2 style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:700; line-height:1.1; letter-spacing:-1px">Three things from Ecobank.</h2>
+<div style="display:flex; gap:32px">
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; border-top:4px solid #5BCB86; padding-top:24px">
+<p style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:800; line-height:1; color:#5BCB86">1</p>
+<p style="font-size:28px; line-height:1.4">Sandbox, then UAT, access to the Notification Service and Validate Account Name</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; border-top:4px solid #5BCB86; padding-top:24px">
+<p style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:800; line-height:1; color:#5BCB86">2</p>
+<p style="font-size:28px; line-height:1.4">A pilot with Blaze student sellers on one campus</p>
+</div>
+<div style="flex:1; display:flex; flex-direction:column; gap:16px; border-top:4px solid #5BCB86; padding-top:24px">
+<p style="font-family:'Bricolage Grotesque', sans-serif; font-size:80px; font-weight:800; line-height:1; color:#5BCB86">3</p>
+<p style="font-size:28px; line-height:1.4">A conversation on whether a bank-confirmed sales record can count as income evidence for Blaze customers</p>
+</div>
+</div>
+<p style="font-size:28px; line-height:1.4; color:#A7B0AB">Team: Iwu Austin-Chris Chukwudi, [role] · [Name], [role] · [Name], [role] · [Name], [role] · FUTO</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1400px; font-size:24px; color:#A7B0AB">useshigo.vercel.app · github.com/AustinChris1/shigo</p>
+<p style="position:absolute; right:128px; bottom:64px; width:120px; font-size:24px; color:#A7B0AB; text-align:right">13</p>
+<aside>Our ask is concrete. First, access to the Notification Service and Validate Account Name, sandbox now and UAT after, so the green screen runs on Ecobank's own credit message. Second, a pilot with Blaze student sellers on one campus. Third, a conversation on whether a bank-confirmed sales record can count as income evidence for Blaze customers. We are [names]. Thank you. The app is live at useshigo.vercel.app; try it on your phone.</aside>
+</section>
+<div id="notes" aria-live="polite"></div>
+<div id="count"></div>
+<script>
+  const slides = [...document.querySelectorAll("body > section")];
+  const notes = document.getElementById("notes");
+  const count = document.getElementById("count");
+  let i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+  function fit() {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    const x = (innerWidth - 1920 * s) / 2, y = (innerHeight - 1080 * s) / 2;
+    slides.forEach((el) => { el.style.transform = "translate(" + x + "px," + y + "px) scale(" + s + ")"; });
+  }
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((el, k) => el.classList.toggle("on", k === i));
+    const a = slides[i].querySelector("aside");
+    notes.textContent = a ? a.textContent : "";
+    count.textContent = (i + 1) + " / " + slides.length;
+    history.replaceState(null, "", "#" + (i + 1));
+  }
+  addEventListener("resize", fit);
+  addEventListener("keydown", (e) => {
+    if (["ArrowRight", "PageDown", " "].includes(e.key)) show(i + 1);
+    else if (["ArrowLeft", "PageUp"].includes(e.key)) show(i - 1);
+    else if (e.key === "Home") show(0);
+    else if (e.key === "End") show(slides.length - 1);
+    else if (e.key === "n" || e.key === "N") notes.classList.toggle("on");
+    else if (e.key === "f" || e.key === "F") document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  });
+  addEventListener("click", (e) => { if (!notes.contains(e.target)) show(e.clientX < innerWidth / 3 ? i - 1 : i + 1); });
+  fit(); show(i);
+</script>
+</body>
+</html>

@@ -8,6 +8,8 @@ Shigo (Hausa for "enter") is a mobile web app for Nigerian student sellers who s
 
 Built for Blaze by Ecobank InnovateX 2026, Track A (Inclusive Finance). Built for Ecobank Blaze accounts; not affiliated with Ecobank. The full brief is `Shigo-InnovateX-2026-Build-Brief.docx`; what's done and what's next is in [TODO.md](TODO.md).
 
+Pitch deck: [pitch/](pitch/) (PDF, presentable HTML slides and speaker notes).
+
 ## What it does
 
 - **Sign in with bank verification.** Pick your bank (searchable list of every Nigerian bank), enter your account number, and the name on the account appears as you type. Your name must match it. A 6-digit code is then texted to your phone.

@@ -50,7 +50,7 @@ Deadline: InnovateX 2026 regional selection (dates unpublished), then the finale
 
 ## Pitch
 
-- [ ] Deck in the order from the brief: moment, crime, damage, user, live demo, pilot, why Ecobank, next, ask
+- [x] Deck in `pitch/` (moment, crime, damage, user, how it works, live demo, matching, record, why Ecobank, status, next, ask); fill in team names and pilot numbers
 - [ ] Say which rail is live on stage; never call a Paystack test credit an Ecobank deposit
 - [ ] Rehearse the version where the sandbox is down
 
