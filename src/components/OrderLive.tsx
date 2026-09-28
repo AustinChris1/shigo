@@ -84,9 +84,8 @@ export function OrderLive(props: {
           <>
             <div className="font-display text-2xl font-extrabold text-(--green)">Shigo. It has entered.</div>
             <div className="mt-1 text-xs text-(--muted)">
-              Confirmed by the bank {paidAt ? new Date(paidAt).toLocaleTimeString("en-NG", { hour: "2-digit", minute: "2-digit" }) : ""}
+              {props.rail === "simulated" ? "Test payment, not real money" : "Confirmed by the bank"} {paidAt ? new Date(paidAt).toLocaleTimeString("en-NG", { hour: "2-digit", minute: "2-digit" }) : ""}
               {props.payer ? ` · from ${props.payer}` : ""}
-              {props.rail === "simulated" ? " · test payment, not real money" : ""}
             </div>
           </>
         ) : state === "CANCELLED" ? (
