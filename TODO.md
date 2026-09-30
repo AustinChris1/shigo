@@ -36,6 +36,18 @@ Deadline: InnovateX 2026 regional selection (dates unpublished), then the finale
 - [ ] Ecobank adapter (blocked on the sandbox reply): replace field guesses in `src/lib/rails/ecobank.ts` once a real sandbox payload is seen; note the source in the file
 - [ ] Termii account: set `TERMII_API_KEY`, `TERMII_BASE_URL` (from the dashboard) and a registered `TERMII_SENDER_ID` in `.env` and Vercel so codes arrive by SMS
 
+## Bobby's Todo
+
+- [ ] Audio chime on single order screen (`OrderLive.tsx`): home screen chimes on payment; single order screen only vibrates and toasts
+- [ ] 1-tap copy account button: add quick copy button for bank account number / details on the waiting order screen alongside WhatsApp share
+- [ ] Fix export styling in dark mode: `/ledger/export` has a white background but inherits dark theme ink, rendering text invisible
+- [ ] Client-side photo compression: resize and compress fake receipt screenshots on canvas in `ReportForm.tsx` before writing to Postgres
+- [ ] Form validation on `/new`: handle zero or invalid amounts gracefully with inline feedback instead of throwing an unhandled error
+- [ ] Network status indicator: show a subtle reconnecting badge on the order screen when polling fails due to unstable campus data
+- [ ] Unmatched credit flexibility: allow partial payments or manual linking in `/credits` when transfer amount differs from order amount
+- [ ] Add `npm test` script to `package.json` covering `name-match-check`, `bank-picker-check` and `e2e-local`
+- [ ] Pilot metrics summary: script or endpoint to aggregate green, amber and held counts for the week 4 pilot slides
+
 ## Later (not needed for the finale)
 
 - [ ] Postgres migrations instead of `prisma db push` at build (`scripts/db-sync.mjs`)
