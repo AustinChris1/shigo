@@ -334,6 +334,7 @@ export function Landing() {
               <a href="https://github.com/AustinChris1/shigo" target="_blank" rel="noreferrer">Source code</a>
               <a href="https://www.innovatex.africa/" target="_blank" rel="noreferrer">InnovateX 2026</a>
               <a href="https://github.com/AustinChris1/shigo/issues" target="_blank" rel="noreferrer">Report a problem</a>
+              <Link href="/privacy">Privacy</Link>
             </div>
           </nav>
         </div>

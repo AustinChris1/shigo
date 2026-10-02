@@ -1,6 +1,6 @@
-// Every rail (Ecobank, Paystack, local simulator) normalises to a CreditEvent so the matcher never knows the bank.
+// Every rail (Ecobank, Paystack, bank-app alerts, local simulator) normalises to a CreditEvent so the matcher never knows the bank.
 
-export type RailId = "ecobank" | "paystack" | "simulated";
+export type RailId = "ecobank" | "paystack" | "bankapp" | "simulated";
 
 export interface CreditEvent {
   rail: RailId;
@@ -11,6 +11,8 @@ export interface CreditEvent {
   narration?: string;
   payerName?: string;
   occurredAt: Date;
+  // Never settle this credit on its own: hold it (or keep it unmatched) for the seller to decide.
+  holdForSeller?: boolean;
   raw: unknown;
 }
 

@@ -1,0 +1,10 @@
+.gradle/
+build/
+app/build/
+local.properties
+.idea/
+*.iml
+# Play upload key and its passwords: back these up somewhere safe, never commit them
+keystore.properties
+*.jks
+*.keystore

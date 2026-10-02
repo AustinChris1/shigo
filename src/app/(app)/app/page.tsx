@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BadgeCheck, LogOut, Plus } from "lucide-react";
+import { BadgeCheck, CircleUser, LogOut, Plus } from "lucide-react";
 import { db } from "@/lib/db";
 import { currentSeller } from "@/lib/session";
 import { LiveOrders } from "@/components/LiveOrders";
@@ -41,6 +41,7 @@ export default async function Home() {
         <Wordmark size={26} />
         <div className="flex items-center gap-2">
           <ThemeToggle className="icon-btn" />
+          <Link href="/account" className="icon-btn" aria-label="Account" title="Account"><CircleUser size={18} aria-hidden="true" /></Link>
           <form action={logoutAction}>
             <button className="icon-btn" aria-label="Sign out" title="Sign out"><LogOut size={18} aria-hidden="true" /></button>
           </form>

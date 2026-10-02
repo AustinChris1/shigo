@@ -24,6 +24,8 @@ model Seller {
   credits        Credit[]
   ledger         LedgerEntry[]
   reports        Report[]
+  devices        Device[]
+  alerts         BankAlert[]
 }
 
 // One order = one expected payment. State machine: PENDING -> PAID, or PENDING -> CANCELLED.
@@ -47,20 +49,20 @@ model Order {
 
 // One inbound payment as the rail reported it; state MATCHED, HELD (seller picks) or UNMATCHED.
 model Credit {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   sellerId   String?
-  seller     Seller?   @relation(fields: [sellerId], references: [id])
-  rail       String // "paystack" | "ecobank" | "simulated"
+  seller     Seller?  @relation(fields: [sellerId], references: [id])
+  rail       String // "paystack" | "ecobank" | "bankapp" | "simulated"
   externalId String // the rail's own id for this transaction; (rail, externalId) is the idempotency key
   amountKobo Int
   narration  String?
   payerName  String?
   occurredAt DateTime
   raw        String // full payload as received, for audit
-  state      String    @default("UNMATCHED")
-  orderId    String?   @unique
-  order      Order?    @relation(fields: [orderId], references: [id])
-  createdAt  DateTime  @default(now())
+  state      String   @default("UNMATCHED")
+  orderId    String?  @unique
+  order      Order?   @relation(fields: [orderId], references: [id])
+  createdAt  DateTime @default(now())
 
   @@unique([rail, externalId])
   @@index([sellerId, state])
@@ -112,4 +114,43 @@ model BankLookup {
   name      String?
   message   String?
   createdAt DateTime @default(now())
+}
+
+// A phone running the Shigo Android app, allowed to send bank-app alerts for one seller. Only a hash of its key is stored.
+model Device {
+  id         String      @id @default(cuid())
+  sellerId   String
+  seller     Seller      @relation(fields: [sellerId], references: [id])
+  keyHash    String      @unique
+  label      String? // phone model, so the seller can tell their phones apart
+  createdAt  DateTime    @default(now())
+  lastSeenAt DateTime?
+  revokedAt  DateTime?
+  alerts     BankAlert[]
+
+  @@index([sellerId])
+}
+
+// Every alert a phone sent from an allowed bank app, read or not, so the seller can see exactly what Shigo saw.
+// status: "credit" (matched like any bank credit), "check" (money in, held for the seller), "unclear", "not_credit", "stale".
+model BankAlert {
+  id          String   @id @default(cuid())
+  sellerId    String
+  seller      Seller   @relation(fields: [sellerId], references: [id])
+  deviceId    String
+  device      Device   @relation(fields: [deviceId], references: [id])
+  app         String // Android package name, e.g. team.opay.pay
+  title       String?
+  text        String
+  postedAt    DateTime // when the bank app posted it, moved onto the server clock
+  fingerprint String // hash of app, post time and text; the same alert sent twice is stored once
+  status      String
+  reason      String?
+  amountKobo  Int?
+  payerName   String?
+  creditId    String?
+  createdAt   DateTime @default(now())
+
+  @@unique([sellerId, fingerprint])
+  @@index([sellerId, createdAt])
 }

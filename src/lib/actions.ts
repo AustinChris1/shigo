@@ -12,6 +12,7 @@ import banks from "./banks.json";
 import { resolveAccount, nameTallies } from "./bank";
 import { sendOtpSms } from "./sms";
 import { createHash, randomInt } from "crypto";
+import { createDeviceKey } from "./device";
 
 
 // A one-shot message the next page shows as a toast (read and cleared by FlashToast).
@@ -178,4 +179,48 @@ export async function sendTestPaymentAction(orderId: string): Promise<{ ok: bool
   revalidatePath(`/orders/${order.id}`);
   revalidatePath("/app");
   return r.status === "matched" ? { ok: true } : { ok: false, error: "The test payment arrived but needs you to pick the order under Unmatched." };
+}
+
+// Android app: this phone may now send the seller's bank-app alerts. The key goes straight to the app; it is never shown.
+export async function pairDeviceAction(label: string | null): Promise<{ key: string }> {
+  const seller = await requireSeller();
+  const { key } = await createDeviceKey(seller.id, label);
+  revalidatePath("/alerts");
+  return { key };
+}
+
+export async function revokeDeviceAction(formData: FormData) {
+  const seller = await requireSeller();
+  const id = String(formData.get("deviceId") ?? "");
+  await db.device.updateMany({ where: { id, sellerId: seller.id, revokedAt: null }, data: { revokedAt: new Date() } });
+  await flash("info", "Phone stopped", "Shigo will ignore bank-app alerts from that phone.");
+  revalidatePath("/alerts");
+}
+
+// Deletes the stored alert text; payments already matched stay in the ledger.
+export async function clearAlertsAction() {
+  const seller = await requireSeller();
+  await db.bankAlert.deleteMany({ where: { sellerId: seller.id } });
+  await flash("info", "Alerts deleted", "Payments already matched stay in your ledger.");
+  revalidatePath("/alerts");
+}
+
+// Play Store rule and the seller's right: everything goes, at once.
+export async function deleteAccountAction(formData: FormData) {
+  const seller = await requireSeller();
+  if (formData.get("confirm") !== "yes") return;
+  const sellerId = seller.id;
+  await db.$transaction([
+    db.bankAlert.deleteMany({ where: { sellerId } }),
+    db.device.deleteMany({ where: { sellerId } }),
+    db.ledgerEntry.deleteMany({ where: { sellerId } }),
+    db.report.deleteMany({ where: { sellerId } }),
+    db.credit.deleteMany({ where: { sellerId } }),
+    db.order.deleteMany({ where: { sellerId } }),
+    db.otpCode.deleteMany({ where: { phone: seller.phone } }),
+    db.seller.delete({ where: { id: sellerId } }),
+  ]);
+  await clearSession();
+  await flash("info", "Account deleted", "Everything Shigo held for you is gone.");
+  redirect("/");
 }

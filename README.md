@@ -18,6 +18,8 @@ Pitch deck: [pitch/](pitch/) (PDF, presentable HTML slides and speaker notes).
 - **Income record.** Every confirmed payment is a dated ledger row; export a one-page record for a loan application.
 - **Report a fake receipt.** Save what you were shown, on your own account, to send to your bank.
 - **Installable app** (Android install button, iPhone Add to Home Screen), light and dark themes.
+- **Android app** ([android/](android/README.md)): the same app, plus it can read the credit alert your bank app (OPay, Moniepoint, PalmPay, Ecobank and others) shows on your own phone, so orders turn green from real payments today. Every alert it reads is listed under Alerts.
+- **Your data:** delete saved alerts, or your whole account, from inside the app. See [/privacy](https://useshigo.vercel.app/privacy).
 
 ## How Shigo knows the money arrived
 
@@ -30,7 +32,10 @@ Shigo never watches the **buyer**. It doesn't read their screenshot, their app o
 
 Why fake receipts can't beat it: a fake receipt changes what's on the *buyer's* phone. Shigo only reacts to the *bank* confirming money in the *seller's* account, and no screenshot can make a bank send that message.
 
-**Where it stands today:** steps 2 to 4 are built and tested. Step 1 waits on Ecobank's sandbox reply ([docs/ecobank-api-notes.md](docs/ecobank-api-notes.md)). Until then, demo mode's **Send test payment** button stands in for the bank's message. It is labelled as a test everywhere and never counted in the income record.
+**Where it stands today:** steps 2 to 4 are built and tested. Step 1 waits on Ecobank's sandbox reply ([docs/ecobank-api-notes.md](docs/ecobank-api-notes.md)). Until then there are two stand-ins, each labelled for what it is:
+
+- the **Android app** reads the credit alert from the seller's own bank app. Real money, but reported by the seller's phone rather than the bank, so it says "Read from your OPay app alert" and the income record lists it separately;
+- demo mode's **Send test payment** button. Not real money: labelled as a test everywhere and never counted in the income record.
 
 ## A real-life example
 
@@ -70,6 +75,7 @@ With `vercel env pull .env` you get the same Neon database the live site uses.
 | `PAYSTACK_SECRET_KEY` | Bank-name check at sign-in (all banks); Paystack payment webhooks | Name check is off; sign-in still works |
 | `TERMII_API_KEY`, `TERMII_BASE_URL`, `TERMII_SENDER_ID` | Texts the sign-in code (Termii, "dnd" route) | Demo mode: the code is shown on screen |
 | `ECOBANK_*` | Ecobank's own account check and payment notifications | Paystack is used instead |
+| `NEXT_PUBLIC_ANDROID_URL` | Play Store (or testing) link shown on the Alerts screen in a browser | "Ask the Shigo team for an invite" |
 | `DEMO_MODE` | "Send test payment" button on waiting orders, for the pitch; test payments are labelled and never counted as income | No button |
 | `ALLOW_SIMULATED_CREDITS` | Developer endpoint that fakes a bank credit (tests only) | Keep `0` on the live site |
 
@@ -81,6 +87,7 @@ Every payment source is turned into one `CreditEvent` (`src/lib/rails/types.ts`)
 | --- | --- | --- |
 | Ecobank Notification Service | `POST /api/webhooks/ecobank` | Built; field names wait on Ecobank's sandbox reply ([docs/ecobank-api-notes.md](docs/ecobank-api-notes.md)) |
 | Paystack dedicated virtual accounts | `POST /api/webhooks/paystack` | Working; signature checked on every call |
+| Bank-app alerts from the Android app | `POST /api/rails/bankapp` | Working; phone key per device, listed bank apps only, rules in `src/lib/rails/bankapp.ts` (a first guess until real alerts are seen) |
 | Local simulator | `POST /api/dev/simulate` | Only when `ALLOW_SIMULATED_CREDITS=1` |
 
 Bank-name checks: Ecobank accounts use Ecobank's Validate Account Name once Ecobank credentials are set (`src/lib/ecobank.ts`); all other banks, and Ecobank until then, use Paystack.
@@ -110,6 +117,8 @@ npm run build && PAYSTACK_SECRET_KEY=sk_test_dummy npm start
 | `node scripts/bank-picker-check.mjs` | Bank search, keyboard use |
 | `node scripts/signin-check.mjs` | Sign-in with the code step |
 | `node scripts/toast-check.mjs` | Toasts, install prompt, live payment |
+| `node scripts/bankapp-parse-check.mts` | Reading bank-app alerts: amounts, sender, balances, never guessing |
+| `node scripts/bankapp-check.mjs` | Android alerts end to end: linking a phone, matching, replays, stale and unclear alerts, blocked apps, stopping a phone, deleting an account |
 | `node scripts/demo-check.mjs` | Demo mode: test payment turns green, stays out of the income record (start the server with `DEMO_MODE=1`) |
 | `node scripts/landing-shots.mjs` | Landing and sign-in screenshots, light and dark |
 

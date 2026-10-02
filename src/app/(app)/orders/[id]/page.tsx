@@ -5,6 +5,7 @@ import { currentSeller } from "@/lib/session";
 import { naira } from "@/lib/money";
 import { cancelOrderAction } from "@/lib/actions";
 import { OrderLive } from "@/components/OrderLive";
+import { confirmedBy } from "@/lib/rails/labels";
 import { ShareButton } from "@/components/ShareButton";
 import { DemoPayButton } from "@/components/DemoPayButton";
 import { demoModeOn } from "@/lib/actions";
@@ -41,7 +42,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         note={order.note}
         paidAt={order.paidAt?.toISOString() ?? null}
         payer={order.credit?.payerName ?? null}
-        rail={order.credit?.rail ?? null}
+        confirmedBy={confirmedBy(order.credit?.rail, order.credit?.raw)}
       />
 
       {order.state === "PENDING" && (

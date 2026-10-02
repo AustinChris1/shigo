@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { currentSeller } from "@/lib/session";
 import { naira } from "@/lib/money";
 import { assignCreditAction } from "@/lib/actions";
+import { confirmedBy } from "@/lib/rails/labels";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,7 @@ export default async function Credits() {
       <header>
         <Link href="/app" className="text-sm text-(--muted)">← Orders</Link>
         <h1 className="mt-2 text-2xl font-bold tracking-tight">Unmatched money</h1>
-        <p className="text-sm text-(--muted)">Payments the bank confirmed that fit more than one order, or none. Pick the order each one belongs to.</p>
+        <p className="text-sm text-(--muted)">Payments that fit more than one order, or none, or that Shigo was not sure about. Pick the order each one belongs to.</p>
       </header>
 
       {credits.length === 0 && <p className="card p-4 text-sm text-(--muted)">Nothing waiting. Every confirmed payment is tied to an order.</p>}
@@ -37,6 +38,7 @@ export default async function Credits() {
                   {c.payerName ? ` · ${c.payerName}` : ""}
                   {c.narration ? ` · "${c.narration}"` : ""}
                 </div>
+                <div className="text-xs text-(--muted)">{confirmedBy(c.rail, c.raw)}</div>
               </div>
               <span className={`pill ${c.state === "HELD" ? "pill-amber" : "pill-grey"}`}>{c.state === "HELD" ? "Pick one" : "No order"}</span>
             </div>

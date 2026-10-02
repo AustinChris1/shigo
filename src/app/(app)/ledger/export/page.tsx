@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { currentSeller } from "@/lib/session";
 import { naira } from "@/lib/money";
 import { PrintButton } from "@/components/PrintButton";
+import { evidenceOf } from "@/lib/rails/labels";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,9 @@ export default async function Export() {
     months.set(k, { sum: c.sum + r.amountKobo, n: c.n + 1 });
   }
   const total = rows.reduce((a, r) => a + r.amountKobo, 0);
+  // Alerts read on the seller's phone are weaker evidence than the bank notifying Shigo; the lender sees which is which.
+  const fromPhone = rows.filter((r) => r.order.credit?.rail === "bankapp");
+  const fromPhoneTotal = fromPhone.reduce((a, r) => a + r.amountKobo, 0);
   const avg = rows.length ? Math.round(total / rows.length) : 0;
   const first = rows[0]?.date;
   const last = rows[rows.length - 1]?.date;
@@ -62,13 +66,13 @@ export default async function Export() {
       <section>
         <h2 className="mb-2 font-semibold">Every confirmed payment</h2>
         <table className="w-full text-xs">
-          <thead><tr className="border-b border-(--line) text-left text-(--muted)"><th className="py-1 pr-3">Date</th><th className="pr-3">Order</th><th className="pr-3">Confirmed by</th><th className="text-right">Amount</th></tr></thead>
+          <thead><tr className="border-b border-(--line) text-left text-(--muted)"><th className="py-1 pr-3">Date</th><th className="pr-3">Order</th><th className="pr-3">Evidence</th><th className="text-right">Amount</th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id} className="border-b border-(--line)">
                 <td className="py-1 pr-3">{r.date.toLocaleDateString("en-NG")}</td>
                 <td className="pr-3">{r.order.reference}{r.order.note ? ` · ${r.order.note}` : ""}</td>
-                <td className="pr-3">{r.order.credit?.rail ?? ""}{r.order.credit?.payerName ? ` · ${r.order.credit.payerName}` : ""}</td>
+                <td className="pr-3">{evidenceOf(r.order.credit?.rail, r.order.credit?.raw)}{r.order.credit?.payerName ? ` · ${r.order.credit.payerName}` : ""}</td>
                 <td className="text-right">{naira(r.amountKobo)}</td>
               </tr>
             ))}
@@ -77,7 +81,7 @@ export default async function Export() {
       </section>
 
       <p className="text-xs text-(--muted)">
-        Each row is a credit the receiving bank notified Shigo of, matched to one order. This record is evidence the seller chooses to share.
+        Each row is a payment matched to one order. &quot;Bank notification&quot; rows were sent to Shigo by the receiving bank&apos;s system. &quot;App alert on seller&apos;s phone&quot; rows were read from the bank app&apos;s notification on the seller&apos;s own phone and sent by the Shigo app{fromPhone.length ? ` (${fromPhone.length} rows, ${naira(fromPhoneTotal)})` : ""}; check those against a bank statement. This record is evidence the seller chooses to share.
         It is not a credit decision; a licensed lender makes that.
       </p>
     </main>

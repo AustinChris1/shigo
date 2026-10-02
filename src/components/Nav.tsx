@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpenText, ClipboardList, Inbox, Plus } from "lucide-react";
+import { BellRing, BookOpenText, ClipboardList, Inbox, Plus } from "lucide-react";
 
 const items = [
   { href: "/app", label: "Orders", Icon: ClipboardList },
   { href: "/credits", label: "Unmatched", Icon: Inbox },
   { href: "/new", label: "New", Icon: Plus, primary: true },
   { href: "/ledger", label: "Ledger", Icon: BookOpenText },
+  { href: "/alerts", label: "Alerts", Icon: BellRing },
 ];
 
 export function Nav() {

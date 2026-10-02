@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Shigo mark from public/icon.svg: the coin inside the account, as when the bank has confirmed. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <group android:translateX="23.6" android:translateY="15.05" android:scaleX="0.95" android:scaleY="0.95">
+        <path android:pathData="M17,24 H47 A9,9 0 0 1 56,33 V49 A9,9 0 0 1 47,58 H17 A9,9 0 0 1 8,49 V33 A9,9 0 0 1 17,24 Z"
+            android:strokeColor="@color/ink" android:strokeWidth="8" />
+        <path android:pathData="M22,41 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0 Z" android:fillColor="@color/green" />
+    </group>
+</vector>

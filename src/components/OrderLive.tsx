@@ -15,7 +15,7 @@ export function OrderLive(props: {
   note: string | null;
   paidAt: string | null;
   payer: string | null;
-  rail: string | null;
+  confirmedBy: string;
 }) {
   const router = useRouter();
   const [state, setState] = useState(props.initialState);
@@ -84,7 +84,7 @@ export function OrderLive(props: {
           <>
             <div className="font-display text-2xl font-extrabold text-(--green)">Shigo. It has entered.</div>
             <div className="mt-1 text-xs text-(--muted)">
-              {props.rail === "simulated" ? "Test payment, not real money" : "Confirmed by the bank"} {paidAt ? new Date(paidAt).toLocaleTimeString("en-NG", { hour: "2-digit", minute: "2-digit" }) : ""}
+              {props.confirmedBy} {paidAt ? new Date(paidAt).toLocaleTimeString("en-NG", { hour: "2-digit", minute: "2-digit" }) : ""}
               {props.payer ? ` · from ${props.payer}` : ""}
             </div>
           </>

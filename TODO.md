@@ -33,6 +33,9 @@ Deadline: InnovateX 2026 regional selection (dates unpublished), then the finale
 
 ## Next in the code
 
+- [ ] Android app (`android/`): Play developer account, upload key, closed test with the pilot sellers as testers (12 for 14 days); replace the alert-reading guesses in `src/lib/rails/bankapp.ts` with what real OPay and Moniepoint alerts say (Alerts screen keeps every one)
+- [ ] Support email for the Play listing and the privacy page (the page links to GitHub issues for now)
+
 - [ ] Ecobank adapter (blocked on the sandbox reply): replace field guesses in `src/lib/rails/ecobank.ts` once a real sandbox payload is seen; note the source in the file
 - [ ] Termii account: set `TERMII_API_KEY`, `TERMII_BASE_URL` (from the dashboard) and a registered `TERMII_SENDER_ID` in `.env` and Vercel so codes arrive by SMS
 

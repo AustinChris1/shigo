@@ -14,7 +14,8 @@ export function InstallPrompt() {
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});
 
     const standalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as Navigator & { standalone?: boolean }).standalone === true;
-    if (standalone) return;
+    // Already inside the Shigo Android app (its WebView adds "ShigoAndroid" to the user agent).
+    if (standalone || /ShigoAndroid\//.test(navigator.userAgent)) return;
     let last = 0;
     try { last = Number(localStorage.getItem(KEY) ?? 0); } catch { /* storage blocked */ }
     if (Date.now() - last < QUIET_DAYS * 86400000) return;
