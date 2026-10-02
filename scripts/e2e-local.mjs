@@ -2,7 +2,7 @@
 import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
-const base = process.argv[2] ?? "http://localhost:3000";
+const base = process.argv[2] ?? process.env.BASE_URL ?? "http://localhost:3000";
 const acct = "0123456789";
 let failures = 0;
 const check = (name, ok, extra = "") => {
@@ -23,7 +23,10 @@ if (existing) {
   await db.order.deleteMany({ where: { sellerId: existing.id } });
   await db.seller.delete({ where: { id: existing.id } });
 }
-await db.credit.deleteMany({ where: { rail: "simulated" } });
+// Only this test's own leftovers: simulated credits to an unknown account (never tied to an order).
+// Never delete every simulated credit: the database is shared with the live site, and that strips real sellers'
+// test payments of their "test" label, so they would count as income.
+await db.credit.deleteMany({ where: { rail: "simulated", sellerId: null } });
 const seller = await db.seller.create({ data: { phone: "08000000001", name: "Ada Obi", bankName: "Ecobank", accountNumber: acct, railAccountRef: acct } });
 
 // Step 1: one open order for ₦4,500

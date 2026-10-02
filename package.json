@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "e2e": "node scripts/e2e-local.mjs",
+    "test": "node scripts/name-match-check.mts && node scripts/bankapp-parse-check.mts",
+    "test:e2e": "node scripts/test-e2e.mjs",
+    "pilot": "node scripts/pilot-metrics.mjs",
     "shots": "node scripts/screenshots.mjs",
     "postinstall": "prisma generate",
     "db:push": "prisma db push"

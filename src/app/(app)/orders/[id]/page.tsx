@@ -7,6 +7,7 @@ import { cancelOrderAction } from "@/lib/actions";
 import { OrderLive } from "@/components/OrderLive";
 import { confirmedBy } from "@/lib/rails/labels";
 import { ShareButton } from "@/components/ShareButton";
+import { CopyButton } from "@/components/CopyButton";
 import { DemoPayButton } from "@/components/DemoPayButton";
 import { demoModeOn } from "@/lib/actions";
 
@@ -50,9 +51,10 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
           {demo && <DemoPayButton orderId={order.id} amount={naira(order.amountKobo)} />}
           <section className="card space-y-3 p-4">
             <h2 className="text-sm font-semibold text-(--muted)">Buyer pays to</h2>
-            <div className="text-lg font-semibold">{seller.bankName ?? "Bank"} · {seller.accountNumber ?? "add your account number"}</div>
+            <div className="text-lg font-semibold">{seller.bankName ?? "Bank"} · <span className="select-all">{seller.accountNumber ?? "add your account number"}</span></div>
             <div className="text-sm">{seller.name}</div>
             <ShareButton href={wa} />
+            <CopyButton text={payText} />
           </section>
 
           <div className="flex gap-2">

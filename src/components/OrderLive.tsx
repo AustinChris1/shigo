@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { naira } from "@/lib/money";
 import { Mark } from "./Mark";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { WifiOff } from "lucide-react";
+import { chime } from "@/lib/chime";
 
 // The single-order screen the seller holds up at the counter. Amber until the bank confirms; then green.
 export function OrderLive(props: {
@@ -21,26 +23,36 @@ export function OrderLive(props: {
   const [state, setState] = useState(props.initialState);
   const [paidAt, setPaidAt] = useState(props.paidAt);
   const [flash, setFlash] = useState(false);
+  // Campus data drops often; say so instead of silently showing a stale amber screen.
+  const [offline, setOffline] = useState(false);
+  // SSE and polling can both see the payment; announce it once.
+  const announced = useRef(false);
 
   // Polling fallback for serverless hosts; SSE below is the fast path on a single Node server.
   useEffect(() => {
     if (state !== "PENDING") return;
+    let failures = 0;
     const id = setInterval(async () => {
       try {
         const r = await fetch("/api/orders/status", { cache: "no-store" });
-        if (!r.ok) return;
+        if (!r.ok) throw new Error(String(r.status));
+        failures = 0;
+        setOffline(false);
         const data: { orders: { id: string; state: string; paidAt: string | null }[] } = await r.json();
         const me = data.orders.find((o) => o.id === props.orderId);
-        if (me?.state === "PAID") {
+        if (me?.state === "PAID" && !announced.current) {
+          announced.current = true;
           setState("PAID");
           setPaidAt(me.paidAt);
           setFlash(true);
-        toast.success(`${naira(props.amountKobo)} has entered`, { id: `paid-${props.orderId}`, description: "Payment confirmed. Hand over the goods." });
-        router.refresh();
+          chime();
+          toast.success(`${naira(props.amountKobo)} has entered`, { id: `paid-${props.orderId}`, description: "Payment confirmed. Hand over the goods." });
+          router.refresh();
           if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
         }
       } catch {
-        /* offline; next tick */
+        // Two misses in a row (about 4 s) before showing it, so one slow request does not flash the badge.
+        if (++failures >= 2) setOffline(true);
       }
     }, 2000);
     return () => clearInterval(id);
@@ -51,10 +63,12 @@ export function OrderLive(props: {
     const es = new EventSource("/api/events");
     es.onmessage = (m) => {
       const ev = JSON.parse(m.data);
-      if (ev.type === "order.paid" && ev.orderId === props.orderId) {
+      if (ev.type === "order.paid" && ev.orderId === props.orderId && !announced.current) {
+        announced.current = true;
         setState("PAID");
         setPaidAt(ev.paidAt);
         setFlash(true);
+        chime();
         toast.success(`${naira(props.amountKobo)} has entered`, { id: `paid-${props.orderId}`, description: "Payment confirmed. Hand over the goods." });
         router.refresh();
         if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
@@ -93,6 +107,11 @@ export function OrderLive(props: {
         ) : (
           <>
             <div className="pill pill-amber text-base">Not yet</div>
+            {offline && (
+              <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-(--amber)" role="status">
+                <WifiOff size={14} aria-hidden="true" /> Reconnecting. Do not hand over yet.
+              </p>
+            )}
             <p className="mt-3 text-xs text-(--muted)">Keep the goods until this turns green. A screenshot cannot change this screen.</p>
           </>
         )}

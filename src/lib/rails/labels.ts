@@ -12,6 +12,7 @@ export function bankAppOf(raw: string | null | undefined): string | null {
 }
 
 export function confirmedBy(rail: string | null | undefined, raw?: string | null): string {
+  if (!rail) return "No payment on record, not counted as income";
   if (rail === "simulated") return "Test payment, not real money";
   if (rail === "bankapp") return `Read from your ${bankAppOf(raw) ?? "bank"} app alert`;
   return "Confirmed by the bank";

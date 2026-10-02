@@ -103,11 +103,18 @@ Bank-name checks: Ecobank accounts use Ecobank's Validate Account Name once Ecob
 
 ## Tests
 
-Run against a local server with the bank check switched off, so tests don't spend Paystack lookups (test keys allow 3 real lookups a day):
+`npm test` runs the rules that need no server (name matching, reading bank-app alerts).
+
+`npm run test:e2e` runs every browser check against one local server. Start it with the bank check off, so tests don't spend Paystack lookups, and with test payments on:
 
 ```bash
-npm run build && PAYSTACK_SECRET_KEY=sk_test_dummy npm start
+npm run build && PAYSTACK_SECRET_KEY=sk_test_dummy DEMO_MODE=1 ALLOW_SIMULATED_CREDITS=1 npm start
+BASE_URL=http://localhost:3000 npm run test:e2e
 ```
+
+The tests use the same database as `.env` (the live Neon database if you pulled it). They only create and delete their own test sellers (phones starting 0809999, and 08000000001).
+
+`npm run pilot -- --since 2026-10-09` prints the pilot numbers (orders, green, amber, held, alerts, reports); add `--json` for the slides.
 
 
 | Script | Checks |

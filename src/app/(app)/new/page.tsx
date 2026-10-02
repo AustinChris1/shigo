@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentSeller } from "@/lib/session";
-import { createOrderAction } from "@/lib/actions";
+import { NewOrderForm } from "@/components/NewOrderForm";
 
 export default async function NewOrder() {
   if (!(await currentSeller())) redirect("/login");
@@ -12,22 +12,7 @@ export default async function NewOrder() {
         <h1 className="mt-2 text-2xl font-bold tracking-tight">Collect a payment</h1>
       </header>
 
-      <form action={createOrderAction} className="card space-y-4 p-4">
-        <div>
-          <label className="label" htmlFor="amount">Amount (₦)</label>
-          <input className="input text-2xl font-bold" id="amount" name="amount" inputMode="decimal" placeholder="4500" autoFocus required />
-        </div>
-        <div>
-          <label className="label" htmlFor="buyerName">Who is paying (optional)</label>
-          <input className="input" id="buyerName" name="buyerName" placeholder="Chidi Okafor" autoComplete="off" maxLength={60} />
-          <p className="mt-1 text-xs text-(--muted)">Their name as on their bank account, if you know it. It helps Shigo tell buyers apart when two pay the same amount.</p>
-        </div>
-        <div>
-          <label className="label" htmlFor="note">What they are buying (optional)</label>
-          <input className="input" id="note" name="note" placeholder="12-inch frontal" maxLength={60} />
-        </div>
-        <button className="btn btn-primary w-full" type="submit">Create order</button>
-      </form>
+      <NewOrderForm />
     </main>
   );
 }

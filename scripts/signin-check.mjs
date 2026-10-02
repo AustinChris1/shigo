@@ -6,7 +6,7 @@ const b = await chromium.launch({ channel: "msedge", headless: true });
 const p = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true })).newPage();
 const errs = [];
 p.on("pageerror", (e) => errs.push(e.message));
-await p.goto("http://localhost:3000/login", { waitUntil: "load", timeout: 120000 });
+await p.goto((process.env.BASE_URL ?? "http://localhost:3000") + "/login", { waitUntil: "load", timeout: 120000 });
 await p.fill("#name", "Test Seller");
 await p.fill("#phone", "08099990001");
 await p.fill("#accountNumber", "1234509876");

@@ -1,10 +1,10 @@
 // Bank-app alerts end to end, with a stand-in for the Android app's bridge.
-// Needs a server: PAYSTACK_SECRET_KEY=sk_test_dummy DEMO_MODE=1 npx next start -p 3100
-// usage: node scripts/bankapp-check.mjs [baseUrl]
+// Needs a server: PAYSTACK_SECRET_KEY=sk_test_dummy DEMO_MODE=1 npx next start
+// usage: node scripts/bankapp-check.mjs [baseUrl]   (or BASE_URL=...)
 import { chromium } from "playwright";
 import { PrismaClient } from "@prisma/client";
 
-const base = process.argv[2] ?? "http://localhost:3100";
+const base = process.argv[2] ?? process.env.BASE_URL ?? "http://localhost:3000";
 const phone = "08099990004";
 // Start clean: remove the test seller from any earlier run.
 const db = new PrismaClient();

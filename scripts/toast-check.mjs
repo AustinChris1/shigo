@@ -4,7 +4,7 @@ import { mkdirSync } from "fs";
 
 const out = process.argv[2] ?? ".impeccable/review";
 mkdirSync(out, { recursive: true });
-const base = "http://localhost:3000";
+const base = process.env.BASE_URL ?? "http://localhost:3000";
 const b = await chromium.launch({ channel: "msedge", headless: true });
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 const p = await ctx.newPage();

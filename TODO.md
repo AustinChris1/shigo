@@ -41,15 +41,18 @@ Deadline: InnovateX 2026 regional selection (dates unpublished), then the finale
 
 ## Bobby's Todo
 
-- [ ] Audio chime on single order screen (`OrderLive.tsx`): home screen chimes on payment; single order screen only vibrates and toasts
-- [ ] 1-tap copy account button: add quick copy button for bank account number / details on the waiting order screen alongside WhatsApp share
-- [ ] Fix export styling in dark mode: `/ledger/export` has a white background but inherits dark theme ink, rendering text invisible
-- [ ] Client-side photo compression: resize and compress fake receipt screenshots on canvas in `ReportForm.tsx` before writing to Postgres
-- [ ] Form validation on `/new`: handle zero or invalid amounts gracefully with inline feedback instead of throwing an unhandled error
-- [ ] Network status indicator: show a subtle reconnecting badge on the order screen when polling fails due to unstable campus data
+Done 3 Oct 2026: `npm test` (no server) and `npm run test:e2e` (against `BASE_URL`); `npm run pilot -- --since 2026-10-09` for the pilot slides.
+
+- [x] Audio chime on single order screen (`OrderLive.tsx`): home screen chimes on payment; single order screen only vibrates and toasts
+- [x] 1-tap copy account button: add quick copy button for bank account number / details on the waiting order screen alongside WhatsApp share
+- [x] Fix export styling in dark mode: `/ledger/export` has a white background but inherits dark theme ink, rendering text invisible
+- [x] Client-side photo compression: resize and compress fake receipt screenshots on canvas in `ReportForm.tsx` before writing to Postgres
+- [x] Form validation on `/new`: handle zero or invalid amounts gracefully with inline feedback instead of throwing an unhandled error
+- [x] Network status indicator: show a subtle reconnecting badge on the order screen when polling fails due to unstable campus data
 - [ ] Unmatched credit flexibility: allow partial payments or manual linking in `/credits` when transfer amount differs from order amount
-- [ ] Add `npm test` script to `package.json` covering `name-match-check`, `bank-picker-check` and `e2e-local`
-- [ ] Pilot metrics summary: script or endpoint to aggregate green, amber and held counts for the week 4 pilot slides
+  - Deferred: a partial payment changes what "paid" means and what the income record shows, so it needs a product decision first (mark the order paid at the amount received? keep it open for the rest?). Before the finale, the seller can cancel and re-create the order at the amount that arrived.
+- [x] Add `npm test` script to `package.json` covering `name-match-check`, `bank-picker-check` and `e2e-local`
+- [x] Pilot metrics summary: script or endpoint to aggregate green, amber and held counts for the week 4 pilot slides
 
 ## Later (not needed for the finale)
 

@@ -47,6 +47,8 @@ html[data-theme="dark"] {
 html, body { background: var(--bg); color: var(--ink); color-scheme: light dark; }
 html[data-theme="light"] { color-scheme: light; }
 html[data-theme="dark"] { color-scheme: dark; }
+/* Paper: always light whatever the theme. The income record is printed or saved as PDF for a lender. */
+.paper { --bg: #ffffff; --bg-2: #f5f6f4; --ink: #0e1311; --muted: #5f6a65; --line: #e6e8e5; --card: #ffffff; background: #ffffff; color: var(--ink); color-scheme: light; }
 body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
 .font-display { font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif; }
 ::selection { background: var(--green-bg); color: var(--ink); }

@@ -11,8 +11,8 @@ export const dynamic = "force-dynamic";
 export default async function Export() {
   const seller = await currentSeller();
   if (!seller) redirect("/login");
-  // Test payments (demo mode) are never part of the income record.
-  const rows = await db.ledgerEntry.findMany({ where: { sellerId: seller.id, NOT: { order: { credit: { rail: "simulated" } } } }, orderBy: { date: "asc" }, include: { order: { include: { credit: true } } } });
+  // Only orders paid by a real credit on record; test payments (demo mode) are never part of the income record.
+  const rows = await db.ledgerEntry.findMany({ where: { sellerId: seller.id, order: { credit: { rail: { not: "simulated" } } } }, orderBy: { date: "asc" }, include: { order: { include: { credit: true } } } });
 
   const months = new Map<string, { sum: number; n: number }>();
   for (const r of rows) {
@@ -29,7 +29,7 @@ export default async function Export() {
   const last = rows[rows.length - 1]?.date;
 
   return (
-    <main className="space-y-6 bg-white p-2">
+    <main className="paper space-y-6 rounded-xl p-4">
       <div className="no-print flex justify-between">
         <a href="/ledger" className="text-sm text-(--muted)">← Ledger</a>
         <PrintButton />

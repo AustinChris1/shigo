@@ -17,7 +17,8 @@ export default async function Ledger() {
 
   const all = await db.ledgerEntry.findMany({ where: { sellerId: seller.id }, orderBy: { date: "desc" }, include: { order: { include: { credit: true } } } });
   // Test payments from demo mode are shown as a count but never added to the income totals.
-  const rows = all.filter((r) => r.order.credit?.rail !== "simulated");
+  // Income needs a real credit on record. Test payments, and paid orders whose credit is missing, are not counted.
+  const rows = all.filter((r) => r.order.credit && r.order.credit.rail !== "simulated");
   const tests = all.length - rows.length;
   const total = rows.reduce((a, r) => a + r.amountKobo, 0);
   // Server component, rendered once per request; reading the clock here is intended.

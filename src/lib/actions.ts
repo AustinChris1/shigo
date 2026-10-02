@@ -105,11 +105,24 @@ export async function logoutAction() {
   redirect("/login");
 }
 
-export async function createOrderAction(formData: FormData) {
+export type OrderFormState = { error?: string; amount?: string; buyerName?: string; note?: string };
+const MAX_ORDER_KOBO = 10_000_000 * 100;
+
+export async function createOrderAction(_prev: OrderFormState, formData: FormData): Promise<OrderFormState> {
   const seller = await requireSeller();
-  const amountKobo = toKobo(String(formData.get("amount") ?? ""));
+  const rawAmount = String(formData.get("amount") ?? "").trim();
   const note = String(formData.get("note") ?? "").trim() || null;
   const buyerName = String(formData.get("buyerName") ?? "").trim().split(/ +/).join(" ").slice(0, 60) || null;
+  const kept = { amount: rawAmount, buyerName: buyerName ?? "", note: note ?? "" };
+
+  // Bad amounts come back to the form with a plain message, never an error page.
+  let amountKobo: number;
+  try {
+    amountKobo = toKobo(rawAmount);
+  } catch {
+    return { ...kept, error: "Enter an amount above ₦0, like 4500." };
+  }
+  if (amountKobo > MAX_ORDER_KOBO) return { ...kept, error: "That is over ₦10,000,000. Check the amount." };
 
   // Retry on the rare reference collision.
   let order = null;
@@ -120,7 +133,7 @@ export async function createOrderAction(formData: FormData) {
       /* collision, try again */
     }
   }
-  if (!order) throw new Error("could not create order, try again");
+  if (!order) return { ...kept, error: "Could not create the order. Try again." };
   emitToSeller(seller.id, { type: "order.created", orderId: order.id });
   revalidatePath("/app");
   await flash("success", buyerName ? `Waiting for ${buyerName.split(" ")[0]}'s payment` : "Order created", "Send your account details to the buyer on WhatsApp.");
@@ -149,7 +162,9 @@ export async function createReportAction(formData: FormData) {
   const seller = await requireSeller();
   const orderId = String(formData.get("orderId") ?? "") || null;
   const note = String(formData.get("note") ?? "").trim() || null;
-  const imageDataUrl = String(formData.get("imageDataUrl") ?? "") || null;
+  // The form sends a shrunk JPEG; anything else (or anything huge) is dropped, the note is still saved.
+  const rawImage = String(formData.get("imageDataUrl") ?? "");
+  const imageDataUrl = /^data:image\/(jpeg|png|webp);base64,/.test(rawImage) && rawImage.length <= 1_000_000 ? rawImage : null;
   await db.report.create({ data: { sellerId: seller.id, orderId, note, imageDataUrl } });
   await flash("success", "Report saved", "Keep the goods until the order turns green.");
   redirect(orderId ? `/orders/${orderId}` : "/app");
