@@ -1,10 +1,17 @@
 // Bank-app alert reading rules; run: node scripts/bankapp-parse-check.mts
-// These alert texts are made up to exercise the rules. They are not copies of real bank alerts; swap in real ones
-// from the pilot (Alerts screen) as they arrive.
+// Cases marked REAL are copied from real alerts (Alerts screen). The rest are made up to exercise the rules;
+// replace them with real ones from the pilot as they arrive.
 import { readAlert, type AlertReading } from "../src/lib/rails/bankapp.ts";
 
 type Want = Partial<AlertReading> & { kind: AlertReading["kind"] };
 const cases: [string | null, string, Want][] = [
+  // REAL: OPay, 3 Oct 2026, ₦500 sent from Moniepoint. The advert on the end must not hold it.
+  ["Incoming Transfer Successful", "AUSTIN-CHRIS IWU has sent you ₦500.00.  Get up to 6% bonus on OPay Airtime.", { kind: "credit", amountKobo: 50_000, payerName: "AUSTIN-CHRIS IWU" }],
+  // REAL: Ecobank app, 3 Oct 2026.
+  ["", "Successful login to your device Austin's S23 Ultra at 12:11:43 on 03.10.26", { kind: "not_credit" }],
+  // an advert must never add a second amount, but a narration amount still must
+  ["Incoming Transfer Successful", "CHIDI OKAFOR has sent you ₦18,000.00. Get up to ₦5,000 bonus on airtime.", { kind: "credit", amountKobo: 1_800_000 }],
+  ["Incoming Transfer Successful", "CHIDI has sent you ₦1.00. You have received ₦18,000 bonus", { kind: "unclear" }],
   // plain credits
   ["Money received", "You have received ₦18,000.00 from CHIDI OKAFOR", { kind: "credit", amountKobo: 1_800_000, payerName: "CHIDI OKAFOR" }],
   ["Credit Alert", "NGN 5,000 has been credited to your account from Ada Obi.", { kind: "credit", amountKobo: 500_000, payerName: "Ada Obi" }],
