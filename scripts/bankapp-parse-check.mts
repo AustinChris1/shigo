@@ -1,7 +1,7 @@
 // Bank-app alert reading rules; run: node scripts/bankapp-parse-check.mts
 // Cases marked REAL are copied from real alerts (Alerts screen). The rest are made up to exercise the rules;
 // replace them with real ones from the pilot as they arrive.
-import { readAlert, type AlertReading } from "../src/lib/rails/bankapp.ts";
+import { readAlert, sameAccount, type AlertReading } from "../src/lib/rails/bankapp.ts";
 
 type Want = Partial<AlertReading> & { kind: AlertReading["kind"] };
 const cases: [string | null, string, Want][] = [
@@ -41,6 +41,22 @@ for (const [title, text, want] of cases) {
   const ok = Object.entries(want).every(([k, v]) => (got as Record<string, unknown>)[k] === v);
   if (!ok) fails++;
   console.log(`${ok ? "PASS" : "FAIL"}  ${want.kind.padEnd(10)} ${text}${ok ? "" : `\n      got ${JSON.stringify(got)}`}`);
+}
+
+// Only the bank on the seller's account can settle an order.
+const ecobankSeller = { bankCode: "050", accountNumber: "2350142338" };
+const opaySeller = { bankCode: "999992", accountNumber: "8012345678" };
+const accountCases: [string, string, { bankCode: string | null; accountNumber: string | null }, boolean][] = [
+  ["team.opay.pay", "AUSTIN-CHRIS IWU has sent you ₦500.00.", ecobankSeller, false], // the real 3 Oct test: OPay credit, Ecobank seller
+  ["team.opay.pay", "AUSTIN-CHRIS IWU has sent you ₦500.00.", opaySeller, true],
+  ["com.app.ecobank", "₦500 credited to account ****2338", ecobankSeller, true],
+  ["com.app.ecobank", "₦500 credited to account ****9999", ecobankSeller, false],
+  ["com.moniepoint.business", "₦500 received", { bankCode: null, accountNumber: null }, false], // unknown bank: never guess
+];
+for (const [app, text, seller, want] of accountCases) {
+  const got = sameAccount(app, text, seller).ok;
+  if (got !== want) fails++;
+  console.log(`${got === want ? "PASS" : "FAIL"}  account    ${app} for ${seller.bankCode ?? "no bank"}: ${want ? "settles" : "held"}`);
 }
 console.log(fails ? `\n${fails} FAILED` : "\nALL PASS");
 process.exit(fails ? 1 : 0);

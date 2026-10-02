@@ -11,6 +11,16 @@ export function bankAppOf(raw: string | null | undefined): string | null {
   }
 }
 
+// Why Shigo held a bank-app credit for the seller instead of settling it ("Arrived in your OPay account, ...").
+export function holdReasonOf(raw: string | null | undefined): string | null {
+  try {
+    const r = JSON.parse(raw ?? "null")?.holdReason;
+    return typeof r === "string" ? r : null;
+  } catch {
+    return null;
+  }
+}
+
 export function confirmedBy(rail: string | null | undefined, raw?: string | null): string {
   if (!rail) return "No payment on record, not counted as income";
   if (rail === "simulated") return "Test payment, not real money";

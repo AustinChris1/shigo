@@ -13,7 +13,8 @@ The web app at useshigo.vercel.app stays the main product. Everything here is a 
 5. The server (`src/lib/rails/bankapp.ts`) reads the amount and sender, and the matcher treats it like any other bank credit, with three extra rules:
    - two amounts in one alert, or no amount: not acted on, shown under Alerts as "Could not read";
    - money in, but mentioning a reversal, refund, request or debit: held under Unmatched for the seller;
-   - seen more than 10 minutes after it arrived: kept, not acted on.
+   - seen more than 10 minutes after it arrived: kept, not acted on;
+   - from a different bank's app than the account on the seller's orders (an OPay credit for a seller whose orders say Ecobank), or showing a different account number: held. It is real money, but not proof this buyer paid the account they were told to pay.
 
 What it never reads: SMS, WhatsApp, or any app not on the list. A buyer can fake an SMS or a WhatsApp message; they cannot make the seller's bank app post a notification.
 

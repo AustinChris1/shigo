@@ -91,16 +91,25 @@ const send = (body, auth = key) => fetch(base + "/api/rails/bankapp", {
   headers: { "content-type": "application/json", ...(auth ? { authorization: `Bearer ${auth}` } : {}) },
   body: JSON.stringify(body),
 }).then(async (r) => ({ code: r.status, ...(await r.json()) }));
-const alert = (text, extra = {}) => { t += 1000; return { app: "team.opay.pay", title: "Money received", text, postedAt: t, receivedAt: t + 300, sentAt: t + 900, ...extra }; };
+// The test seller signs in with the default bank, Ecobank, so Ecobank's app is the one whose alerts can settle orders.
+const alert = (text, extra = {}) => { t += 1000; return { app: "com.app.ecobank", title: "Money received", text, postedAt: t, receivedAt: t + 300, sentAt: t + 900, ...extra }; };
 
-const credit = alert("You have received ₦18,000.00 from CHIDI OKAFOR");
-let r = await send(credit);
-check("credit alert matches the order", r.status === "credit" && r.match === "matched", JSON.stringify(r));
+// Money into the seller's OTHER account (OPay), same amount: real, but not proof this buyer paid. Held, never green.
+let r = await send(alert("You have received ₦18,000.00 from CHIDI OKAFOR", { app: "team.opay.pay" }));
+check("credit into another account is held, not green", r.status === "check" && r.match === "held", JSON.stringify(r));
+r = await send(alert("You have received ₦18,000.00 from CHIDI OKAFOR into account ****9999"));
+check("credit for a different account number is held", r.status === "check" && r.match === "held", JSON.stringify(r));
+
+const credit = alert("You have received ₦18,000.00 from CHIDI OKAFOR into account ****9871");
+r = await send(credit);
+check("credit into the account on the order matches it", r.status === "credit" && r.match === "matched", JSON.stringify(r));
 r = await send(credit);
 check("same alert twice is counted once", r.replay === true, JSON.stringify(r));
 
 await p.goto(orderUrl, { waitUntil: "load" });
-check("order says where the confirmation came from", await p.getByText("Read from your OPay app alert").isVisible());
+check("order says where the confirmation came from", await p.getByText("Read from your Ecobank app alert").isVisible());
+await p.goto(base + "/credits", { waitUntil: "load" });
+check("held money says why it was held", await p.getByText(/Held: Arrived in your OPay account/).first().isVisible());
 
 r = await send(alert("You have received ₦9,000 from OLD BUYER", { receivedAt: t + 20 * 60_000, sentAt: t + 20 * 60_000 + 500 }));
 check("old alert is kept but not acted on", r.status === "stale", JSON.stringify(r));
@@ -118,7 +127,7 @@ check("doubtful credit is held for the seller", r.status === "check" && r.match 
 await p.goto(base + "/alerts", { waitUntil: "load" });
 check("alerts screen lists what Shigo saw", (await p.locator("article").count()) >= 4);
 await p.goto(base + "/ledger/export", { waitUntil: "load" });
-check("income record names the evidence", await p.getByText("OPay app alert on seller's phone").first().isVisible());
+check("income record names the evidence", await p.getByText("Ecobank app alert on seller's phone").first().isVisible());
 
 // Stop the phone: its key no longer works.
 await p.goto(base + "/alerts", { waitUntil: "load" });

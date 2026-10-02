@@ -26,6 +26,45 @@ export const BANK_APPS: Record<string, string> = {
   "com.fidelitybank.mobile": "Fidelity Bank",
 };
 
+// Which bank each app's alerts are about, as NIP codes from src/lib/banks.json. An alert only settles an order when
+// it comes from the app of the bank on the seller's Shigo account: money into the seller's other accounts is real,
+// but it is not the account the buyer was told to pay, so it could be an unrelated payment of the same amount.
+export const BANK_APP_CODES: Record<string, string[]> = {
+  "team.opay.pay": ["999992"],
+  "com.moniepoint.personal": ["50515"],
+  "com.moniepoint.business": ["50515"],
+  "com.transsnet.palmpay": ["999991"],
+  "com.kudabank.app": ["50211"],
+  "com.app.ecobank": ["050"],
+  "com.ecobank.mobileapp5": ["050"],
+  "com.ecobankbusiness": ["050"],
+  "com.gtbank.gtworldv1": ["058"],
+  "com.zenithBank.eazymoney": ["057"],
+  "com.accessbank.nextgen": ["044", "063"],
+  "com.accessbank.accessbankapp": ["044", "063"],
+  "com.firstbank.firstmobile": ["011"],
+  "com.wemabank.alat.prod": ["035", "035A"],
+  "com.uba.vericash": ["033"],
+  "com.fidelitybank.mobile": ["070"],
+};
+
+// Masked account digits some alerts carry: "****2338", "xx2338", "...2338", "ending 2338".
+const MASKED_ACCOUNT = /(?:\*+|x{2,}|\.{3}|ending (?:in )?)\s?(\d{3,4})\b/i;
+
+// Is this alert about the account on the seller's orders? Unknown means no: never guess.
+export function sameAccount(app: string, text: string, seller: { bankCode: string | null; accountNumber: string | null }): { ok: boolean; reason?: string } {
+  const label = BANK_APPS[app] ?? "that";
+  if (app === TEST_APP) return { ok: true };
+  if (!seller.bankCode || !BANK_APP_CODES[app]?.includes(seller.bankCode)) {
+    return { ok: false, reason: `Arrived in your ${label} account, not the one buyers are told to pay` };
+  }
+  const tail = text.match(MASKED_ACCOUNT)?.[1];
+  if (tail && seller.accountNumber && !seller.accountNumber.endsWith(tail)) {
+    return { ok: false, reason: `For your ${label} account ending ${tail}, not the one buyers are told to pay` };
+  }
+  return { ok: true };
+}
+
 // The debug build of the Android app posts its own test alerts under this name. Accepted only where simulated
 // credits are allowed (local tests), never on the live site.
 export const TEST_APP = "app.shigo.test";

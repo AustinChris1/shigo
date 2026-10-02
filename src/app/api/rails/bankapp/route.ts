@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { deviceFromBearer } from "@/lib/device";
 import { ingestCredit } from "@/lib/match";
-import { alertFingerprint, bankAppLabel, readAlert } from "@/lib/rails/bankapp";
+import { alertFingerprint, bankAppLabel, readAlert, sameAccount } from "@/lib/rails/bankapp";
 
 export const dynamic = "force-dynamic";
 
@@ -45,10 +45,13 @@ export async function POST(req: Request) {
 
   const reading = readAlert(title, text);
   const stale = receivedAt - postedAt > STALE_MS;
-  const status = stale ? "stale" : reading.kind;
+  // Money in, but into a different account from the one on the seller's orders: real, yet not proof this buyer paid.
+  const account = sameAccount(app, `${title ?? ""} ${text}`, device.seller);
+  const otherAccount = reading.kind === "credit" && !account.ok;
+  const status = stale ? "stale" : otherAccount ? "check" : reading.kind;
   const amountKobo = "amountKobo" in reading ? reading.amountKobo : null;
   const payerName = "payerName" in reading ? (reading.payerName ?? null) : null;
-  const reason = stale ? "Seen too long after it arrived" : "reason" in reading ? reading.reason : null;
+  const reason = stale ? "Seen too long after it arrived" : otherAccount ? account.reason! : "reason" in reading ? reading.reason : null;
 
   const alert = await db.bankAlert.create({
     data: { sellerId, deviceId: device.id, app, title, text, postedAt: occurredAt, fingerprint, status, reason, amountKobo, payerName },
@@ -67,8 +70,8 @@ export async function POST(req: Request) {
     payerName: reading.payerName,
     narration: text.slice(0, 300),
     occurredAt,
-    holdForSeller: reading.kind === "check",
-    raw: { app, title, text, alertId: alert.id },
+    holdForSeller: reading.kind === "check" || !account.ok,
+    raw: { app, title, text, alertId: alert.id, holdReason: !account.ok ? account.reason : reading.kind === "check" ? reading.reason : undefined },
   });
   await db.bankAlert.update({ where: { id: alert.id }, data: { creditId: r.creditId } });
   return Response.json({ status, match: r.status });

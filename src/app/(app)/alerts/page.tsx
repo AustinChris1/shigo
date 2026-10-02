@@ -32,9 +32,12 @@ export default async function Alerts() {
   return (
     <main className="space-y-5">
       <header>
-        <Link href="/app" className="text-sm text-(--muted)">← Orders</Link>
+        <Link href="/account" className="text-sm text-(--muted)">← Account</Link>
         <h1 className="mt-2 text-2xl font-bold tracking-tight">Bank app alerts</h1>
-        <p className="text-sm text-(--muted)">Paid into OPay, Moniepoint or another bank app? The Shigo app for Android can read the alert your bank app shows on this phone, so your order turns green from the real payment.</p>
+        <p className="text-sm text-(--muted)">The Shigo app for Android can read the credit alert your bank app shows on this phone, so your order turns green from the real payment.</p>
+        <p className="mt-2 text-sm">
+          Only alerts for <b>{seller.bankName ?? "the account on your orders"}</b> turn an order green, because that is the account buyers are told to pay. Money into your other bank apps is shown here and held under Unmatched for you to decide.
+        </p>
       </header>
 
       <AlertsSetup apps={apps} linkedPhones={devices.length} androidUrl={process.env.NEXT_PUBLIC_ANDROID_URL ?? null} />

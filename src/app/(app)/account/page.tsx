@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { BellRing, ChevronRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { currentSeller } from "@/lib/session";
 import { deleteAccountAction, logoutAction } from "@/lib/actions";
@@ -9,9 +10,10 @@ export const dynamic = "force-dynamic";
 export default async function Account() {
   const seller = await currentSeller();
   if (!seller) redirect("/login");
-  const [orders, alerts] = await Promise.all([
+  const [orders, alerts, phones] = await Promise.all([
     db.order.count({ where: { sellerId: seller.id } }),
     db.bankAlert.count({ where: { sellerId: seller.id } }),
+    db.device.count({ where: { sellerId: seller.id, revokedAt: null } }),
   ]);
 
   return (
@@ -29,6 +31,17 @@ export default async function Account() {
           <button className="btn btn-ghost w-full" type="submit">Sign out</button>
         </form>
       </section>
+
+      <Link href="/alerts" className="card flex items-center justify-between gap-3 p-4 text-sm">
+        <span className="flex items-center gap-3">
+          <BellRing size={20} aria-hidden="true" />
+          <span>
+            <span className="block font-semibold">Bank app alerts</span>
+            <span className="block text-(--muted)">{phones > 0 ? `On for ${phones} phone${phones === 1 ? "" : "s"}` : "Android app: turn orders green from your bank app's alerts"}</span>
+          </span>
+        </span>
+        <ChevronRight size={18} aria-hidden="true" className="text-(--muted)" />
+      </Link>
 
       <section className="card space-y-3 p-4 text-sm">
         <h2 className="font-semibold">Delete my account</h2>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BadgeCheck, CircleUser, LogOut, Plus } from "lucide-react";
+import { headers } from "next/headers";
+import { BadgeCheck, BellRing, ChevronRight, LogOut, Plus } from "lucide-react";
 import { db } from "@/lib/db";
 import { currentSeller } from "@/lib/session";
 import { LiveOrders } from "@/components/LiveOrders";
@@ -17,10 +18,13 @@ export default async function Home() {
 
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
-  const [orders, today, pendingCredits] = await Promise.all([
+  // Inside the Android app (its WebView says "ShigoAndroid"), offer alert setup once, until a phone is linked.
+  const inAndroidApp = /ShigoAndroid\//.test((await headers()).get("user-agent") ?? "");
+  const [orders, today, pendingCredits, phones] = await Promise.all([
     db.order.findMany({ where: { sellerId: seller.id }, orderBy: { createdAt: "desc" }, take: 50 }),
     db.ledgerEntry.aggregate({ where: { sellerId: seller.id, date: { gte: startOfDay }, order: { credit: { rail: { not: "simulated" } } } }, _sum: { amountKobo: true }, _count: true }),
     db.credit.count({ where: { sellerId: seller.id, state: { in: ["HELD", "UNMATCHED"] } } }),
+    inAndroidApp ? db.device.count({ where: { sellerId: seller.id, revokedAt: null } }) : Promise.resolve(1),
   ]);
   const rows = orders.map((o) => ({
     id: o.id,
@@ -41,7 +45,6 @@ export default async function Home() {
         <Wordmark size={26} />
         <div className="flex items-center gap-2">
           <ThemeToggle className="icon-btn" />
-          <Link href="/account" className="icon-btn" aria-label="Account" title="Account"><CircleUser size={18} aria-hidden="true" /></Link>
           <form action={logoutAction}>
             <button className="icon-btn" aria-label="Sign out" title="Sign out"><LogOut size={18} aria-hidden="true" /></button>
           </form>
@@ -65,6 +68,19 @@ export default async function Home() {
           {pendingCredits > 0 && <Link href="/credits"><b>{pendingCredits}</b> to assign</Link>}
         </div>
       </section>
+
+      {inAndroidApp && phones === 0 && (
+        <Link href="/alerts" className="card flex items-center justify-between gap-3 p-4 text-sm">
+          <span className="flex items-center gap-3">
+            <BellRing size={20} aria-hidden="true" className="text-(--green)" />
+            <span>
+              <span className="block font-semibold">Turn on bank app alerts</span>
+              <span className="block text-(--muted)">Orders turn green from your bank app&apos;s credit alert.</span>
+            </span>
+          </span>
+          <ChevronRight size={18} aria-hidden="true" className="text-(--muted)" />
+        </Link>
+      )}
 
       <Link href="/new" className="btn btn-primary w-full app-collect">
         <Plus size={20} aria-hidden="true" /> Collect a payment

@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { currentSeller } from "@/lib/session";
 import { naira } from "@/lib/money";
 import { assignCreditAction } from "@/lib/actions";
-import { confirmedBy } from "@/lib/rails/labels";
+import { confirmedBy, holdReasonOf } from "@/lib/rails/labels";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +39,7 @@ export default async function Credits() {
                   {c.narration ? ` · "${c.narration}"` : ""}
                 </div>
                 <div className="text-xs text-(--muted)">{confirmedBy(c.rail, c.raw)}</div>
+                {holdReasonOf(c.raw) && <div className="mt-1 text-xs font-semibold text-(--amber)">Held: {holdReasonOf(c.raw)}</div>}
               </div>
               <span className={`pill ${c.state === "HELD" ? "pill-amber" : "pill-grey"}`}>{c.state === "HELD" ? "Pick one" : "No order"}</span>
             </div>

@@ -39,7 +39,13 @@ Deadline: InnovateX 2026 regional selection (dates unpublished), then the finale
 - [ ] Ecobank adapter (blocked on the sandbox reply): replace field guesses in `src/lib/rails/ecobank.ts` once a real sandbox payload is seen; note the source in the file
 - [ ] Termii account: set `TERMII_API_KEY`, `TERMII_BASE_URL` (from the dashboard) and a registered `TERMII_SENDER_ID` in `.env` and Vercel so codes arrive by SMS
 
-## Bobby's Todo
+## Money screen and SMS (after the green path is proven)
+
+Agreed 3 Oct 2026. Start only once a real bank-app credit has turned an order green for the right reason (the account on the order, the right sender).
+
+- [ ] Money screen: every credit and debit from the bank-app alerts Shigo already receives, across all the seller's accounts (business or not): from or to whom, what for, totals by day, week, month and year. Its own switch and its own disclosure. Never part of the sales income record or its export.
+- [ ] SMS, only after the first Play approval, under Play's "SMS-based money management" exception (declaration form; the tracker must be a core feature of the listing). Filter on the phone: only bank transaction texts leave it, never the rest of someone's SMS. SMS rows are labelled "SMS", stay out of the sales export, and never settle an order; at most "SMS says ₦X arrived. SMS can be faked, check your bank app."
+
 
 Done 3 Oct 2026: `npm test` (no server) and `npm run test:e2e` (against `BASE_URL`); `npm run pilot -- --since 2026-10-09` for the pilot slides.
 
