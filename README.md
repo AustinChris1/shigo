@@ -76,6 +76,7 @@ With `vercel env pull .env` you get the same Neon database the live site uses.
 | `TERMII_API_KEY`, `TERMII_BASE_URL`, `TERMII_SENDER_ID` | Texts the sign-in code (Termii, "dnd" route) | Demo mode: the code is shown on screen |
 | `ECOBANK_*` | Ecobank's own account check and payment notifications | Paystack is used instead |
 | `NEXT_PUBLIC_ANDROID_URL` | Play Store (or testing) link shown on the Alerts screen in a browser | "Ask the Shigo team for an invite" |
+| `REVIEW_PHONE`, `REVIEW_CODE` | A demo account for Google Play review: that phone and 6-digit code sign in with no bank check and no SMS (see `android/play/LISTING.md`) | Off |
 | `DEMO_MODE` | "Send test payment" button on waiting orders, for the pitch; test payments are labelled and never counted as income | No button |
 | `ALLOW_SIMULATED_CREDITS` | Developer endpoint that fakes a bank credit (tests only) | Keep `0` on the live site |
 
