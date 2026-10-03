@@ -8,3 +8,5 @@ local.properties
 keystore.properties
 *.jks
 *.keystore
+# Play review login (phone and code given to Google in Play Console)
+play-review.secret

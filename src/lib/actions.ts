@@ -36,6 +36,12 @@ export async function loginAction(prev: LoginState, formData: FormData): Promise
   return String(formData.get("step")) === "code" ? verifyCode(prev, formData) : startSignIn(formData);
 }
 
+function reviewLogin(): { phone: string; code: string } | null {
+  const phone = process.env.REVIEW_PHONE ?? "";
+  const code = process.env.REVIEW_CODE ?? "";
+  return /^0\d{10}$/.test(phone) && /^\d{6}$/.test(code) ? { phone, code } : null;
+}
+
 async function startSignIn(formData: FormData): Promise<LoginState> {
   const phone = String(formData.get("phone") ?? "").replace(/\s+/g, "");
   const name = String(formData.get("name") ?? "").trim();
@@ -44,6 +50,16 @@ async function startSignIn(formData: FormData): Promise<LoginState> {
   const accountNumber = String(formData.get("accountNumber") ?? "").replace(/\s+/g, "");
   if (name.length < 2) return { error: "Enter your name as it appears on your bank account." };
   if (!/^0\d{10}$/.test(phone)) return { error: "Phone number must be 11 digits, like 08012345678." };
+
+  // Google Play review: one demo account, reached with REVIEW_PHONE and the secret REVIEW_CODE given to Google in
+  // Play Console. No bank check, no SMS, a dummy account number that no bank or webhook can ever credit.
+  const review = reviewLogin();
+  if (review && phone === review.phone) {
+    const pending: Pending = { phone, name: "Play Review", bankCode: "050", bankName: "Ecobank Nigeria", accountNumber: "0000000000", accountName: null, verified: false };
+    await db.otpCode.create({ data: { phone, codeHash: hashCode(phone, review.code), payload: JSON.stringify(pending), expiresAt: new Date(Date.now() + CODE_TTL_MS) } });
+    return { step: "code", phone, resent: Date.now() };
+  }
+
   if (!bankName) return { error: "Pick the bank buyers pay into." };
   if (!/^\d{10}$/.test(accountNumber)) return { error: "Account number must be 10 digits." };
 
