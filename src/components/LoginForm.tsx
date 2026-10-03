@@ -6,9 +6,12 @@ import { toast } from "sonner";
 import { loginAction, type LoginState } from "@/lib/actions";
 import { AccountField, type AccountStatus } from "./AccountField";
 
-export function LoginForm() {
+// reviewPhone: Google Play's test account. The bank check cannot pass for it, so it never blocks that number;
+// the secret is the 6-digit code, checked on the server.
+export function LoginForm({ reviewPhone = null }: { reviewPhone?: string | null }) {
   const [state, action, pending] = useActionState<LoginState, FormData>(loginAction, {});
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState(state.phone ?? "");
   const [acct, setAcct] = useState<AccountStatus>("idle");
   const [leftResponse, setLeftResponse] = useState<number | undefined>(undefined);
   const codeRef = useRef<HTMLInputElement>(null);
@@ -24,7 +27,8 @@ export function LoginForm() {
   }, [state]);
   useEffect(() => { if (onCodeStep) codeRef.current?.focus(); }, [onCodeStep]);
 
-  const blocked = acct === "notfound" || acct === "mismatch" || acct === "checking";
+  const isReview = !!reviewPhone && phone === reviewPhone;
+  const blocked = !isReview && (acct === "notfound" || acct === "mismatch" || acct === "checking");
 
   if (onCodeStep) {
     return (
@@ -59,7 +63,7 @@ export function LoginForm() {
       </div>
       <div>
         <label className="label" htmlFor="phone">Phone number</label>
-        <input className="input font-mono tracking-wider" id="phone" name="phone" inputMode="numeric" autoComplete="tel-national" placeholder="08012345678" pattern="0\d{10}" maxLength={11} required defaultValue={state.phone} />
+        <input className="input font-mono tracking-wider" id="phone" name="phone" inputMode="numeric" autoComplete="tel-national" placeholder="08012345678" pattern="0\d{10}" maxLength={11} required defaultValue={state.phone} onChange={(e) => setPhone(e.target.value.trim())} />
       </div>
       <AccountField personName={name} onStatus={setAcct} />
       {state.error && state.step !== "code" && <p className="form-error" role="alert">{state.error}</p>}

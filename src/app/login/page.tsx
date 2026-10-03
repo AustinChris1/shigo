@@ -32,7 +32,7 @@ export default async function Login() {
           <h1><Wordmark size={40} /></h1>
           <p className="lg-intro">Sign in to collect a payment. It takes a minute.</p>
 
-          <LoginForm />
+          <LoginForm reviewPhone={process.env.REVIEW_PHONE && process.env.REVIEW_CODE ? process.env.REVIEW_PHONE : null} />
           <p className="lg-fine">We text a one-time code to your phone to sign you in.</p>
         </div>
       </section>
