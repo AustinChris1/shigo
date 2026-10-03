@@ -27,7 +27,7 @@ export function NewOrderForm() {
       <div>
         <label className="label" htmlFor="buyerName">Who is paying (optional)</label>
         <input className="input" id="buyerName" name="buyerName" placeholder="Chidi Okafor" autoComplete="off" maxLength={60} defaultValue={state.buyerName} />
-        <p className="mt-1 text-xs text-(--muted)">Their name as on their bank account, if you know it. It helps Shigo tell buyers apart when two pay the same amount.</p>
+        <p className="mt-1 text-xs text-(--muted)">As on their bank account. Helps tell buyers apart.</p>
       </div>
       <div>
         <label className="label" htmlFor="note">What they are buying (optional)</label>

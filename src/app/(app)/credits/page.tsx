@@ -4,7 +4,9 @@ import { db } from "@/lib/db";
 import { currentSeller } from "@/lib/session";
 import { naira } from "@/lib/money";
 import { assignCreditAction } from "@/lib/actions";
-import { confirmedBy, holdReasonOf } from "@/lib/rails/labels";
+import { bankAppPkgOf, holdReasonOf } from "@/lib/rails/labels";
+import { BANK_APPS } from "@/lib/rails/bankapp";
+import { BankBadge } from "@/components/BankBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -21,30 +23,30 @@ export default async function Credits() {
       <header>
         <Link href="/app" className="text-sm text-(--muted)">← Orders</Link>
         <h1 className="mt-2 text-2xl font-bold tracking-tight">Unmatched money</h1>
-        <p className="text-sm text-(--muted)">Payments that fit more than one order, or none, or that Shigo was not sure about. Pick the order each one belongs to.</p>
+        <p className="text-sm text-(--muted)">Pick the order each payment belongs to.</p>
       </header>
 
-      {credits.length === 0 && <p className="card p-4 text-sm text-(--muted)">Nothing waiting. Every confirmed payment is tied to an order.</p>}
+      {credits.length === 0 && <p className="card p-4 text-sm text-(--muted)">Nothing waiting.</p>}
 
       {credits.map((c) => {
         const fits = open.filter((o) => o.amountKobo === c.amountKobo);
+        const pkg = c.rail === "bankapp" ? bankAppPkgOf(c.raw) : null;
+        const reason = holdReasonOf(c.raw);
         return (
           <section key={c.id} className="card space-y-3 p-4">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-center gap-3">
+              {pkg && <BankBadge pkg={pkg} label={BANK_APPS[pkg] ?? "Bank"} size={40} />}
+              <div className="min-w-0 flex-1">
                 <div className="text-lg font-bold">{naira(c.amountKobo)}</div>
-                <div className="text-xs text-(--muted)">
-                  {new Date(c.occurredAt).toLocaleString("en-NG")}
-                  {c.payerName ? ` · ${c.payerName}` : ""}
-                  {c.narration ? ` · "${c.narration}"` : ""}
+                <div className="truncate text-xs text-(--muted)">
+                  {[c.payerName, new Date(c.occurredAt).toLocaleString("en-NG", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }), !pkg && c.narration ? `"${c.narration}"` : null].filter(Boolean).join(" · ")}
                 </div>
-                <div className="text-xs text-(--muted)">{confirmedBy(c.rail, c.raw)}</div>
-                {holdReasonOf(c.raw) && <div className="mt-1 text-xs font-semibold text-(--amber)">Held: {holdReasonOf(c.raw)}</div>}
               </div>
               <span className={`pill ${c.state === "HELD" ? "pill-amber" : "pill-grey"}`}>{c.state === "HELD" ? "Pick one" : "No order"}</span>
             </div>
+            {reason && <p className="text-xs font-semibold text-(--amber)">{reason}</p>}
             {fits.length === 0 ? (
-              <p className="text-sm text-(--muted)">No open order for this amount. Create one for {naira(c.amountKobo)} and come back, or leave it here as a record.</p>
+              <p className="text-sm text-(--muted)">No open {naira(c.amountKobo)} order.</p>
             ) : (
               <form action={assignCreditAction} className="space-y-2">
                 <input type="hidden" name="creditId" value={c.id} />

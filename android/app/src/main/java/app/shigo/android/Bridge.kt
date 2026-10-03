@@ -4,8 +4,13 @@ import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Base64
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
+import java.io.ByteArrayOutputStream
 import android.os.Build
 import android.provider.Settings
 import android.webkit.WebView
@@ -36,12 +41,21 @@ object Bridge {
         }
     }
 
+    // The bank's own launcher icon from this phone, as a small PNG, so the page can show real logos without
+    // Shigo hosting any bank's branding.
+    private fun iconOf(pm: PackageManager, pkg: String): String? = runCatching {
+        val bmp = pm.getApplicationIcon(pkg).toBitmap(96, 96)
+        val out = ByteArrayOutputStream()
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, out)
+        "data:image/png;base64," + Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
+    }.getOrNull()
+
     fun status(ctx: Context): JSONObject {
         val pm = ctx.packageManager
         val installed = JSONArray()
         for ((pkg, label) in BankApps.ALL) {
             val present = runCatching { pm.getPackageInfo(pkg, 0) }.isSuccess
-            if (present) installed.put(JSONObject().put("pkg", pkg).put("label", label))
+            if (present) installed.put(JSONObject().put("pkg", pkg).put("label", label).put("icon", iconOf(pm, pkg) ?: JSONObject.NULL))
         }
         val installer = runCatching {
             if (Build.VERSION.SDK_INT >= 30) pm.getInstallSourceInfo(ctx.packageName).installingPackageName

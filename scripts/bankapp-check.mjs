@@ -61,16 +61,17 @@ await p.waitForURL("**/app", { timeout: 60000 });
 
 // Link the phone from the Alerts screen.
 await p.goto(base + "/alerts", { waitUntil: "load" });
-await p.getByText("Before you turn it on").waitFor({ timeout: 20000 });
-check("disclosure shown before turning on", await p.getByText("never reads SMS, WhatsApp").isVisible());
-await p.getByRole("button", { name: "I agree, turn it on" }).click();
+await p.getByText("Never SMS, WhatsApp, or your PIN.").waitFor({ timeout: 20000 });
+check("disclosure shown before turning on", await p.getByText("Shigo reads notifications from bank apps only").isVisible());
+check("found bank shows with its badge", await p.getByTitle("OPay").first().isVisible());
+await p.getByRole("button", { name: "Agree and turn on" }).click();
 await p.waitForFunction(() => window.__bridgeLog.some((m) => m.type === "pair"), null, { timeout: 20000 });
 const log = await p.evaluate(() => window.__bridgeLog);
 const key = log.find((m) => m.type === "pair")?.key;
 check("page hands a phone key to the app", /^shd_/.test(key ?? ""));
 check("page opens notification access", log.some((m) => m.type === "openListenerSettings"));
 await p.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
-await p.getByText(/On\. Keep your bank app/).waitFor({ timeout: 10000 });
+await p.getByText("On", { exact: true }).waitFor({ timeout: 10000 });
 check("status shows on once access is allowed", true);
 
 // Orders to pay.
@@ -109,7 +110,7 @@ check("same alert twice is counted once", r.replay === true, JSON.stringify(r));
 await p.goto(orderUrl, { waitUntil: "load" });
 check("order says where the confirmation came from", await p.getByText("Read from your Ecobank app alert").isVisible());
 await p.goto(base + "/credits", { waitUntil: "load" });
-check("held money says why it was held", await p.getByText(/Held: Arrived in your OPay account/).first().isVisible());
+check("held money says why it was held", await p.getByText(/Arrived in your OPay account/).first().isVisible());
 
 r = await send(alert("You have received ₦9,000 from OLD BUYER", { receivedAt: t + 20 * 60_000, sentAt: t + 20 * 60_000 + 500 }));
 check("old alert is kept but not acted on", r.status === "stale", JSON.stringify(r));
@@ -125,7 +126,7 @@ r = await send(alert("₦25,000 has been credited to you. Reversal of failed tra
 check("doubtful credit is held for the seller", r.status === "check" && r.match === "held", JSON.stringify(r));
 
 await p.goto(base + "/alerts", { waitUntil: "load" });
-check("alerts screen lists what Shigo saw", (await p.locator("article").count()) >= 4);
+check("alerts screen lists what Shigo saw", (await p.locator("main details").count()) >= 4);
 await p.goto(base + "/ledger/export", { waitUntil: "load" });
 check("income record names the evidence", await p.getByText("Ecobank app alert on seller's phone").first().isVisible());
 

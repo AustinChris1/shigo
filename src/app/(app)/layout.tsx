@@ -6,7 +6,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const seller = await currentSeller();
   return (
     <>
-      <div className="mx-auto max-w-md px-4 pb-24 pt-4">{children}</div>
+      <div className="mx-auto max-w-md px-4 pb-36 pt-4">{children}</div>
       {seller && <Nav />}
     </>
   );

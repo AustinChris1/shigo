@@ -45,7 +45,7 @@ export default async function Account() {
 
       <section className="card space-y-3 p-4 text-sm">
         <h2 className="font-semibold">Delete my account</h2>
-        <p className="text-(--muted)">Deletes your account and all {orders} orders, their payments and your income record, your reports, and {alerts} saved bank-app alerts. This cannot be undone. Export your income record first if you need it.</p>
+        <p className="text-(--muted)">Removes {orders} orders, your income record, reports and {alerts} alerts. Cannot be undone. <Link href="/ledger/export" className="underline">Export your record</Link> first.</p>
         <form action={deleteAccountAction} className="space-y-2">
           <label className="flex items-start gap-2">
             <input type="checkbox" name="confirm" value="yes" required className="mt-1" />

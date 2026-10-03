@@ -11,6 +11,16 @@ export function bankAppOf(raw: string | null | undefined): string | null {
   }
 }
 
+// The Android package of the bank app an alert came from, for its logo.
+export function bankAppPkgOf(raw: string | null | undefined): string | null {
+  try {
+    const app = JSON.parse(raw ?? "null")?.app;
+    return typeof app === "string" ? app : null;
+  } catch {
+    return null;
+  }
+}
+
 // Why Shigo held a bank-app credit for the seller instead of settling it ("Arrived in your OPay account, ...").
 export function holdReasonOf(raw: string | null | undefined): string | null {
   try {
