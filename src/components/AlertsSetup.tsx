@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { BellRing, Check, Link2, ShieldCheck, Smartphone, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 import { pairDeviceAction } from "@/lib/actions";
-import { BankBadge, saveBankIcons } from "./BankBadge";
+import { BankBadge } from "./BankBadge";
 
 // Talks to the Shigo Android app through the "shigoAndroid" bridge, which the app adds only for Shigo's own pages.
 type Bridge = {
@@ -12,7 +12,7 @@ type Bridge = {
   addEventListener(type: "message", fn: (e: MessageEvent) => void): void;
   removeEventListener(type: "message", fn: (e: MessageEvent) => void): void;
 };
-type App = { pkg: string; label: string; icon?: string | null };
+type App = { pkg: string; label: string };
 type Status = {
   type: "status";
   version: string;
@@ -42,7 +42,6 @@ export function AlertsSetup({ apps, androidUrl }: { apps: App[]; androidUrl: str
         const m = JSON.parse(String(e.data));
         if (m.type !== "status") return;
         setStatus(m);
-        saveBankIcons(m.installedApps ?? []);
       } catch {
         /* not ours */
       }

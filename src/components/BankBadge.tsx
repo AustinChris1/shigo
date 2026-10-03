@@ -1,34 +1,21 @@
-"use client";
-
-import { useSyncExternalStore } from "react";
-
-// Bank logos come from the bank apps on the seller's own phone (the Android app sends their icons), cached here so
-// every screen can show them. Shigo hosts no bank's branding. Elsewhere, a tile with the bank's initials.
-const KEY = "shigo-bank-icons";
-const EVENT = "shigo-bank-icons";
-
-export function saveBankIcons(apps: { pkg: string; icon?: string | null }[]) {
-  try {
-    const cur = JSON.parse(localStorage.getItem(KEY) ?? "{}");
-    for (const a of apps) if (a.icon) cur[a.pkg] = a.icon;
-    localStorage.setItem(KEY, JSON.stringify(cur));
-    window.dispatchEvent(new Event(EVENT));
-  } catch {
-    /* storage blocked: initials it is */
-  }
-}
-
-function iconFor(pkg: string): string | null {
-  try {
-    return JSON.parse(localStorage.getItem(KEY) ?? "{}")[pkg] ?? null;
-  } catch {
-    return null;
-  }
-}
-
-const subscribe = (fn: () => void) => {
-  window.addEventListener(EVENT, fn);
-  return () => window.removeEventListener(EVENT, fn);
+// Small bank logos bundled with the site (public/banks, about 22 KB for all), so they show on every screen and
+// phone, in the browser or the Android app. Sources, fetched 3 Oct 2026: OPay's Google Play app icon; the others
+// are each bank's website icon via Google's favicon service. Access Bank had no usable one, so it gets initials.
+const LOGOS: Record<string, string> = {
+  "team.opay.pay": "/banks/opay.webp",
+  "com.moniepoint.personal": "/banks/moniepoint.png",
+  "com.moniepoint.business": "/banks/moniepoint.png",
+  "com.transsnet.palmpay": "/banks/palmpay.png",
+  "com.kudabank.app": "/banks/kuda.png",
+  "com.app.ecobank": "/banks/ecobank.png",
+  "com.ecobank.mobileapp5": "/banks/ecobank.png",
+  "com.ecobankbusiness": "/banks/ecobank.png",
+  "com.gtbank.gtworldv1": "/banks/gtbank.png",
+  "com.zenithBank.eazymoney": "/banks/zenith.png",
+  "com.firstbank.firstmobile": "/banks/firstbank.png",
+  "com.wemabank.alat.prod": "/banks/alat.png",
+  "com.uba.vericash": "/banks/uba.png",
+  "com.fidelitybank.mobile": "/banks/fidelity.png",
 };
 
 const initials = (label: string) => {
@@ -37,20 +24,19 @@ const initials = (label: string) => {
 };
 
 export function BankBadge({ pkg, label, size = 36 }: { pkg: string; label: string; size?: number }) {
-  const icon = useSyncExternalStore(subscribe, () => iconFor(pkg), () => null);
+  const logo = LOGOS[pkg];
   const box = { width: size, height: size };
-  if (icon) {
-    // A small data-URL from the phone; next/image adds nothing here.
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={icon} alt={label} title={label} style={box} className="shrink-0 rounded-xl" />;
+  if (logo) {
+    return (
+      <span title={label} style={box} className="grid shrink-0 place-items-center overflow-hidden rounded-xl bg-white">
+        {/* Tiny static logo; next/image would add a request for nothing. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logo} alt={label} width={size} height={size} loading="lazy" className="size-full object-contain" />
+      </span>
+    );
   }
   return (
-    <span
-      title={label}
-      aria-label={label}
-      style={{ ...box, fontSize: size * 0.36 }}
-      className="grid shrink-0 place-items-center rounded-xl border border-(--line) bg-(--bg-2) font-bold text-(--muted)"
-    >
+    <span title={label} aria-label={label} style={{ ...box, fontSize: size * 0.36 }} className="grid shrink-0 place-items-center rounded-xl border border-(--line) bg-(--bg-2) font-bold text-(--muted)">
       {initials(label)}
     </span>
   );

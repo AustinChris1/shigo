@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CircleCheck, CircleHelp, CircleMinus, Clock3, PauseCircle, Smartphone, Target } from "lucide-react";
+import { CircleCheck, CircleHelp, CircleMinus, Clock3, Inbox, PauseCircle, Smartphone, Target } from "lucide-react";
 import { db } from "@/lib/db";
 import { currentSeller } from "@/lib/session";
 import { naira } from "@/lib/money";
@@ -11,8 +11,10 @@ import { BankBadge } from "@/components/BankBadge";
 
 export const dynamic = "force-dynamic";
 
+// "Paid" only when the money settled an order; money read fine but tied to no order yet is "Money in".
 const STATUS = {
-  credit: { label: "Paid", Icon: CircleCheck, cls: "text-(--green)" },
+  paid: { label: "Paid", Icon: CircleCheck, cls: "text-(--green)" },
+  credit: { label: "Money in", Icon: Inbox, cls: "text-(--green)" },
   check: { label: "Held", Icon: PauseCircle, cls: "text-(--amber)" },
   unclear: { label: "Unclear", Icon: CircleHelp, cls: "text-(--amber)" },
   not_credit: { label: "Ignored", Icon: CircleMinus, cls: "text-(--muted)" },
@@ -31,6 +33,10 @@ export default async function Alerts() {
     db.bankAlert.findMany({ where: { sellerId: seller.id }, orderBy: { createdAt: "desc" }, take: 40 }),
   ]);
   const apps = Object.entries(BANK_APPS).map(([pkg, label]) => ({ pkg, label }));
+  const creditIds = alerts.map((a) => a.creditId).filter((id): id is string => !!id);
+  const settled = new Set(
+    (await db.credit.findMany({ where: { id: { in: creditIds }, state: "MATCHED" }, select: { id: true } })).map((c) => c.id),
+  );
 
   return (
     <main className="space-y-4">
@@ -61,7 +67,7 @@ export default async function Alerts() {
       <section className="card divide-y divide-(--line)">
         {alerts.length === 0 && devices.length > 0 && <p className="p-4 text-sm text-(--muted)">No alerts yet.</p>}
         {alerts.map((a) => {
-          const s = STATUS[a.status as keyof typeof STATUS] ?? STATUS.unclear;
+          const s = a.creditId && settled.has(a.creditId) ? STATUS.paid : (STATUS[a.status as keyof typeof STATUS] ?? STATUS.unclear);
           const label = BANK_APPS[a.app] ?? "Test";
           return (
             <details key={a.id} className="group p-3">
